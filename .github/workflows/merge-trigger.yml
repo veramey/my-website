@@ -1,6 +1,6 @@
 name: Merge Trigger
 
-run-name: "Merge Trigger : unit-tests passed → retry approved merges"
+run-name: "Merge Trigger : unit-tests passed → merge approved PRs"
 
 on:
   workflow_run:
@@ -10,61 +10,39 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  actions: read
 
 jobs:
   merge-trigger:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository }}
     concurrency:
-      group: merge-trigger-${{ github.event.workflow_run.head_branch }}-${{ github.event.workflow_run.head_sha }}
+      group: merge-trigger-${{ github.event.workflow_run.head_sha }}
       cancel-in-progress: false
 
     steps:
-      - name: Job Info
-        run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🔀 Merge Trigger Started"
-          echo "⚡ Unit Tests passed on: ${{ github.event.workflow_run.head_branch }}"
-          echo "🔗 Triggered by: ${{ github.event.workflow_run.html_url }}"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT_TOKEN }}
-          persist-credentials: false
-
-      - name: Cache DMTools CLI
-        id: cache-dmtools
-        uses: actions/cache@v4
-        with:
-          path: ~/.dmtools
-          key: dmtools-v1.7.149
-
-      - name: Install DMTools CLI
-        if: steps.cache-dmtools.outputs.cache-hit != 'true'
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/IstiN/dmtools/v1.7.149/install.sh | bash -s v1.7.149
-
-      - name: Add DMTools to PATH
-        run: echo "$HOME/.dmtools/bin" >> $GITHUB_PATH
-
-      - name: Configure Git Author
-        run: |
-          git config --global user.name "AI Teammate"
-          git config --global user.email "agent.ai.native@gmail.com"
-
-      - name: Run Merge Trigger
+      - name: Merge approved PRs
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          DEFAULT_LLM: "gemini"
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          SOURCE_GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          DMTOOLS_INTEGRATIONS: "github,ai,file"
-          CLI_ALLOWED_COMMANDS: "find,ls,cat,mkdir,bash"
         run: |
-          CI_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          dmtools run agents/sm_merge.json --ciRunUrl "${CI_RUN_URL}"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          echo "Checking PRs for branch: $BRANCH"
+
+          PR=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --head "$BRANCH" \
+            --state open \
+            --label "pr_approved" \
+            --json number \
+            --jq '.[0].number')
+
+          if [ -z "$PR" ] || [ "$PR" = "null" ]; then
+            echo "No approved PRs found for branch $BRANCH — skipping"
+            exit 0
+          fi
+
+          echo "Merging PR #$PR"
+          gh pr merge $PR \
+            --repo ${{ github.repository }} \
+            --squash \
+            --auto \
+            --delete-branch
