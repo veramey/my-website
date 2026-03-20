@@ -20,7 +20,13 @@ jobs:
       cancel-in-progress: false
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
       - name: Merge approved PRs
+        id: merge
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
@@ -37,6 +43,7 @@ jobs:
 
           if [ -z "$PR" ] || [ "$PR" = "null" ]; then
             echo "No approved PRs found for branch $BRANCH — skipping"
+            echo "PR_NUMBER=" >> $GITHUB_ENV
             exit 0
           fi
 
@@ -44,5 +51,20 @@ jobs:
           gh pr merge $PR \
             --repo ${{ github.repository }} \
             --squash \
-            --auto \
             --delete-branch
+
+          echo "PR_NUMBER=$PR" >> $GITHUB_ENV
+
+      - name: Move issue to Done
+        if: env.PR_NUMBER != ''
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          # Extract issue number from branch name (feature/issue-N)
+          ISSUE_NUMBER=$(echo "$BRANCH" | grep -oE '[0-9]+$')
+
+          if [ -n "$ISSUE_NUMBER" ]; then
+            chmod +x scripts/update-project-status.sh
+            ./scripts/update-project-status.sh "$ISSUE_NUMBER" "Done" || true
+          fi

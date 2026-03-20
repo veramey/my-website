@@ -50,6 +50,13 @@ jobs:
           git config --global user.name "AI Teammate"
           git config --global user.email "agent.ai.native@gmail.com"
 
+      - name: Move issue to In progress
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          chmod +x scripts/update-project-status.sh
+          ./scripts/update-project-status.sh ${{ inputs.issue_number }} "In progress" || true
+
       - name: Fetch GitHub Issue
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -57,14 +64,7 @@ jobs:
           mkdir -p input
           gh issue view ${{ inputs.issue_number }} \
             --repo ${{ github.repository }} \
-            --json title,body,labels \
-            > input/issue.json
-
-          # Write human-readable version
-          gh issue view ${{ inputs.issue_number }} \
-            --repo ${{ github.repository }} \
             > input/issue.md
-
           echo "Issue fetched:"
           cat input/issue.md
 
@@ -134,4 +134,10 @@ jobs:
           EOF
           )" \
             --base main \
-            --head $BRANCH
+            --head $BRANCH || true
+
+      - name: Move issue to In review
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          ./scripts/update-project-status.sh ${{ inputs.issue_number }} "In review" || true
