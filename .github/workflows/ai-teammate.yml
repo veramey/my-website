@@ -1,0 +1,106 @@
+name: AI Teammate
+
+run-name: "${{ inputs.config_file }} : ${{ inputs.concurrency_key }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: 'Path to agent config (e.g. agents/teammate.json)'
+        required: true
+      encoded_config:
+        description: 'Encoded or JSON Agent Config override'
+        required: false
+      concurrency_key:
+        description: 'Issue number for concurrency grouping (e.g. 42)'
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  ai-teammate:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ai-teammate-${{ inputs.config_file }}-${{ inputs.concurrency_key }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🤖 AI Teammate Started"
+          echo "📁 Config: ${{ inputs.config_file }}"
+          echo "🎫 Issue:  ${{ inputs.concurrency_key }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --progress=false
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Cache DMTools CLI
+        id: cache-dmtools
+        uses: actions/cache@v4
+        with:
+          path: ~/.dmtools
+          key: dmtools-v1.7.149
+
+      - name: Install DMTools CLI
+        if: steps.cache-dmtools.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/IstiN/dmtools/v1.7.149/install.sh | bash -s v1.7.149
+
+      - name: Add DMTools to PATH
+        run: echo "$HOME/.dmtools/bin" >> $GITHUB_PATH
+
+      - name: Configure Git Author
+        run: |
+          git config --global user.name "AI Teammate"
+          git config --global user.email "agent.ai.native@gmail.com"
+
+      - name: Run AI Teammate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_DISABLE_WATCHDOG: "1"
+
+          # GitHub
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          SOURCE_GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+          # DMTools
+          DMTOOLS_INTEGRATIONS: "github,ai,cli,file"
+          DMTOOLS_CACHE_ENABLED: ${{ vars.DMTOOLS_CACHE_ENABLED }}
+          CLI_ALLOWED_COMMANDS: "find,ls,cat,mkdir,bash,npm,claude"
+          DEFAULT_LLM: "anthropic"
+          ANTHROPIC_MODEL: "claude-sonnet-4-6"
+
+          # Config override
+          ENCODED_CONFIG: ${{ inputs.encoded_config }}
+
+        run: |
+          CI_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "CI Run URL: ${CI_RUN_URL}"
+
+          if [ -n "${ENCODED_CONFIG}" ]; then
+            dmtools --debug run "${{ inputs.config_file }}" "${ENCODED_CONFIG}" --ciRunUrl "${CI_RUN_URL}"
+          else
+            dmtools --debug run "${{ inputs.config_file }}" --ciRunUrl "${CI_RUN_URL}"
+          fi
