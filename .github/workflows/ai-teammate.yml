@@ -1,6 +1,6 @@
 name: AI Teammate
 
-run-name: "Issue #${{ inputs.issue_number }} : AI implementation"
+run-name: "Issue #${{ inputs.issue_number || github.event.issue.number }} : AI implementation"
 
 on:
   workflow_dispatch:
@@ -8,6 +8,8 @@ on:
       issue_number:
         description: 'GitHub Issue number to implement (e.g. 1)'
         required: true
+  issues:
+    types: [labeled]
 
 permissions:
   contents: write
@@ -16,16 +18,29 @@ permissions:
 jobs:
   ai-teammate:
     runs-on: ubuntu-latest
+    # For label trigger: only fire on 'ready' label, skip sub-issues created by breakdown agent
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.label.name == 'ready' && contains(github.event.issue.labels.*.name, 'sub-issue'))
     concurrency:
-      group: ai-teammate-${{ inputs.issue_number }}
+      group: ai-teammate-${{ inputs.issue_number || github.event.issue.number }}
       cancel-in-progress: false
 
     steps:
+      - name: Resolve issue number
+        id: issue
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Job Info
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "🤖 AI Teammate Started"
-          echo "🎫 Issue: #${{ inputs.issue_number }}"
+          echo "🎫 Issue: #${{ steps.issue.outputs.number }}"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Checkout repository
@@ -55,14 +70,14 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           chmod +x scripts/update-project-status.sh
-          ./scripts/update-project-status.sh ${{ inputs.issue_number }} "In progress" || true
+          ./scripts/update-project-status.sh ${{ steps.issue.outputs.number }} "In progress" || true
 
       - name: Fetch GitHub Issue
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           mkdir -p input
-          gh issue view ${{ inputs.issue_number }} \
+          gh issue view ${{ steps.issue.outputs.number }} \
             --repo ${{ github.repository }} \
             > input/issue.md
           echo "Issue fetched:"
@@ -70,7 +85,7 @@ jobs:
 
       - name: Create feature branch
         run: |
-          BRANCH="feature/issue-${{ inputs.issue_number }}"
+          BRANCH="feature/issue-${{ steps.issue.outputs.number }}"
           git checkout -b $BRANCH
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
@@ -95,6 +110,8 @@ jobs:
           3. Implement the feature — create or modify only the necessary files
           4. Do not over-engineer. Keep it simple.
           5. Write a short summary of what you did to output/summary.md
+          6. Write Playwright tests for what you built to tests/feature-${{ steps.issue.outputs.number }}.spec.ts
+             (import from @playwright/test, use baseURL from config, test only what this issue adds)
 
           Start now.
           "
@@ -103,10 +120,10 @@ jobs:
         run: |
           git add -A
           git diff --staged --quiet && echo "No changes to commit" && exit 0
-          git commit -m "feat: implement issue #${{ inputs.issue_number }}
+          git commit -m "feat: implement issue #${{ steps.issue.outputs.number }}
 
           Implemented by AI Teammate via Claude Code.
-          Closes #${{ inputs.issue_number }}"
+          Closes #${{ steps.issue.outputs.number }}"
 
       - name: Push branch
         run: git push origin $BRANCH --force
@@ -122,12 +139,12 @@ jobs:
 
           gh pr create \
             --repo ${{ github.repository }} \
-            --title "feat: issue #${{ inputs.issue_number }}" \
+            --title "feat: issue #${{ steps.issue.outputs.number }}" \
             --body "$(cat <<EOF
           ## Summary
           $SUMMARY
 
-          Closes #${{ inputs.issue_number }}
+          Closes #${{ steps.issue.outputs.number }}
 
           ---
           🤖 Implemented by AI Teammate (Claude Code)
@@ -140,4 +157,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          ./scripts/update-project-status.sh ${{ inputs.issue_number }} "In review" || true
+          ./scripts/update-project-status.sh ${{ steps.issue.outputs.number }} "In review" || true

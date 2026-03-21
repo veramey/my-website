@@ -1,0 +1,128 @@
+name: Issue Breakdown
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  breakdown:
+    runs-on: ubuntu-latest
+    # Skip sub-issues (created by this agent with 'sub-issue' label)
+    if: ${{ !contains(github.event.issue.labels.*.name, 'sub-issue') }}
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔍 Issue Breakdown Started"
+          echo "📋 Issue: #${{ github.event.issue.number }} — ${{ github.event.issue.title }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Write issue to file
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          mkdir -p input output
+          gh issue view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            > input/issue.md
+          cat input/issue.md
+
+      - name: Run Claude — breakdown into sub-issues
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude --dangerously-skip-permissions -p "
+          You are a project manager for a Next.js content website about AI ops for small agencies.
+
+          Read the GitHub issue in input/issue.md and PRD.md.
+
+          Your job: break this issue into specific, implementable sub-tasks for a developer.
+
+          Rules:
+          - Each sub-task must be completable in a single coding session
+          - Each sub-task body MUST start with: 'Parent: #${{ github.event.issue.number }}'
+          - Each sub-task body MUST reference the relevant PRD section (e.g. 'See PRD.md section 3.1')
+          - Create 2–5 sub-tasks maximum
+          - If the issue is already specific enough (e.g. a single small component), create just 1 sub-task
+          - Sub-task titles should be action-oriented (e.g. 'Build Nav component', 'Create Home hero section')
+
+          Output ONLY a valid JSON array to output/subtasks.json. Format:
+          [
+            {
+              \"title\": \"Sub-task title\",
+              \"body\": \"Parent: #N\n\nSee PRD.md section X.Y\n\nDetailed description of what to build.\"
+            }
+          ]
+
+          Do not output anything else. Only the JSON file.
+          "
+
+      - name: Create sub-issues
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          if [ ! -f output/subtasks.json ]; then
+            echo "No subtasks.json generated — skipping"
+            exit 0
+          fi
+
+          echo "Creating sub-issues..."
+          cat output/subtasks.json
+
+          # Ensure label exists
+          gh label create "sub-issue" --color "0075ca" --description "Auto-generated sub-task" \
+            --repo ${{ github.repository }} 2>/dev/null || true
+          gh label create "ready" --color "0e8a16" --description "Ready for AI Teammate" \
+            --repo ${{ github.repository }} 2>/dev/null || true
+
+          # Create each sub-issue
+          echo "$( cat output/subtasks.json )" | \
+          node -e "
+            const fs = require('fs');
+            const tasks = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+            fs.writeFileSync('output/tasks_processed.sh',
+              tasks.map((t, i) => \`echo 'Creating sub-issue \${i+1}...'\`).join('\n')
+            );
+            tasks.forEach((t, i) => {
+              const title = t.title.replace(/'/g, \"'\\\\''\");
+              const body = t.body.replace(/'/g, \"'\\\\''\");
+              fs.appendFileSync('output/create_issues.sh',
+                \`gh issue create --repo \$REPO --title '\${title}' --body '\${body}' --label 'sub-issue,ready'\n\`
+              );
+            });
+          "
+
+          export REPO=${{ github.repository }}
+          chmod +x output/create_issues.sh
+          bash output/create_issues.sh
+
+          echo "✅ Sub-issues created"
+
+      - name: Comment on parent issue
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          if [ ! -f output/subtasks.json ]; then exit 0; fi
+
+          COUNT=$(cat output/subtasks.json | node -e "const d=require('fs').readFileSync('/dev/stdin','utf8'); console.log(JSON.parse(d).length)")
+
+          gh issue comment ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body "🤖 **Breakdown complete** — created **${COUNT}** sub-issues.
+
+          Each sub-issue has been labeled \`ready\` and will be picked up by the AI Teammate automatically.
+
+          _Breakdown by Claude Code_"
