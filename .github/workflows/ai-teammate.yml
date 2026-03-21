@@ -113,6 +113,26 @@ jobs:
           6. Write Playwright tests for what you built to tests/feature-${{ steps.issue.outputs.number }}.spec.ts
              (import from @playwright/test, use baseURL from config, test only what this issue adds)
 
+          MANDATORY quality rules — your code WILL be rejected if you violate these:
+
+          ACCESSIBILITY:
+          - Every <input> MUST have an associated <label htmlFor='id'> or aria-label attribute
+          - Never rely on placeholder as a label substitute
+          - Interactive elements (buttons, links) must have descriptive text or aria-label
+
+          FORMS:
+          - Never create a form with onSubmit that only calls e.preventDefault() and nothing else
+          - If real API integration is out of scope, implement visible UI feedback:
+            use local state (useState) to show a 'Thank you!' success message after submit
+          - Email inputs must have an onChange handler; if the form shows an error state,
+            reset error when user starts typing (onChange: if error, setStatus('idle'))
+
+          PLAYWRIGHT TESTS:
+          - Before writing a selector like a[href='/some-path'], verify that href actually exists in your code
+          - Never test links to pages that are not implemented in this issue
+          - Only test elements you actually built in this PR
+          - Use text-based selectors (getByText, getByRole) instead of attribute selectors when possible
+
           Start now.
           "
 
