@@ -8,7 +8,10 @@ export default defineConfig({
   reporter: 'line',
 
   use: {
-    baseURL: process.env.BASE_URL || 'https://veramey.github.io/my-website',
+    baseURL: (() => {
+      const raw = process.env.BASE_URL || 'https://veramey.github.io/my-website';
+      return raw.endsWith('/') ? raw : raw + '/';
+    })(),
     screenshot: 'only-on-failure',
   },
 

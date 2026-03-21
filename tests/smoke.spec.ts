@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const pages = [
-  { path: '/', name: 'Home' },
+  { path: './', name: 'Home' },
 ];
 
 for (const { path, name } of pages) {
@@ -32,7 +32,7 @@ for (const { path, name } of pages) {
 }
 
 test('Home page has key sections', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
 
   // Nav present
   await expect(page.locator('nav')).toBeVisible();
