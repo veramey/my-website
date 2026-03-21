@@ -26,7 +26,7 @@ test('article page has h1 with correct content', async ({ page }) => {
 test('article page lists all 5 tools', async ({ page }) => {
   await page.goto(PATH);
   for (const toolName of ['Fireflies.ai', 'Otter.ai', 'Fathom', 'Notion AI', 'tl;dv']) {
-    await expect(page.getByText(toolName, { exact: false })).toBeVisible();
+    await expect(page.getByText(toolName, { exact: false }).first()).toBeVisible();
   }
 });
 
@@ -40,8 +40,8 @@ test('article page has newsletter signup form', async ({ page }) => {
 
 test('article page has related links to other articles', async ({ page }) => {
   await page.goto(PATH);
-  await expect(page.locator('a[href="/tools/best-ai-tools-small-agencies"]')).toBeVisible();
-  await expect(page.locator('a[href="/guides/automate-client-onboarding-small-agency"]')).toBeVisible();
+  await expect(page.locator('a[href="/tools/best-ai-tools-small-agencies/"]')).toBeVisible();
+  await expect(page.locator('a[href="/guides/automate-client-onboarding-small-agency/"]')).toBeVisible();
 });
 
 test('article page Tools category label is shown', async ({ page }) => {
