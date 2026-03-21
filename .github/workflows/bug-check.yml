@@ -75,16 +75,31 @@ jobs:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
           claude --dangerously-skip-permissions -p "
-          You are a senior Next.js code reviewer.
+          You are a senior Next.js code reviewer for an MVP content site.
 
           Read the PR diff in input/pr_diff.md.
 
-          Identify any bugs, broken logic, missing edge cases, or accessibility issues.
+          APPROVE (STATUS: APPROVED) if the code:
+          - Renders correctly without runtime errors
+          - Does not crash the page or produce unhandled exceptions
+          - Forms show visible feedback to the user (success OR error message)
+          - Interactive elements are keyboard accessible (have labels, roles)
 
-          Rules:
-          - Be specific: name the exact file and what is wrong
-          - Only flag real bugs, not style preferences
-          - If the code looks good, say so
+          REJECT (STATUS: NEEDS_FIX) ONLY for these categories:
+          - Code that throws a runtime error or crashes the page
+          - A form that gives zero feedback on any user action (silent submit with nothing shown)
+          - Missing aria-label or label on a form input that makes it completely unusable
+          - TypeScript errors or broken imports
+
+          DO NOT reject for:
+          - Missing loading/disabled states during async operations
+          - Missing server-side validation (client-side is sufficient for MVP)
+          - UX polish: animations, focus management, debouncing
+          - Code style, unused variables, or refactoring suggestions
+          - Missing features not mentioned in the issue
+          - API endpoints that return mock/stub responses
+          - Double-submit protection
+          - Minor accessibility improvements (aria-live, role=alert on non-critical elements)
 
           Output to output/review.md:
           - First line must be exactly: STATUS: APPROVED or STATUS: NEEDS_FIX
