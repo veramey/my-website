@@ -1,0 +1,113 @@
+import Head from 'next/head'
+import Link from 'next/link'
+import { useState } from 'react'
+import Nav from '@/components/Nav'
+
+const benefits = [
+  { label: '1 practical workflow', description: 'A system you can implement this week.' },
+  { label: '1 tool recommendation', description: 'Honest picks — no affiliate noise.' },
+  { label: '1 useful template or idea', description: 'Something you can put to work immediately.' },
+  { label: 'No hype, no AI spam', description: 'Only content that earns your attention.' },
+]
+
+export default function Newsletter() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'success'>('idle')
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setStatus('success')
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Newsletter — AI Ops for Small Agencies</title>
+        <meta name="description" content="Weekly practical AI systems for small agencies. One workflow, one tool, one template — every week. No hype." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:title" content="Newsletter — AI Ops for Small Agencies" />
+        <meta property="og:description" content="Weekly practical AI systems for small agencies. One workflow, one tool, one template — every week. No hype." />
+      </Head>
+
+      <Nav />
+
+      <main>
+        {/* Hero */}
+        <section className="max-w-5xl mx-auto px-6 py-20 md:py-28">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Newsletter</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+              Weekly AI systems for small agencies
+            </h1>
+            <p className="mt-5 text-lg text-gray-600 leading-relaxed">
+              Practical workflows, tools and templates to help lean teams automate delivery and internal ops.
+            </p>
+          </div>
+        </section>
+
+        {/* What you get */}
+        <section className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">What you get</h2>
+            <div className="grid md:grid-cols-2 gap-6 max-w-2xl">
+              {benefits.map((item) => (
+                <div key={item.label} className="border-t-2 border-gray-900 pt-4">
+                  <p className="text-sm font-semibold text-gray-900">{item.label}</p>
+                  <p className="mt-1 text-sm text-gray-500">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Signup form */}
+        <section className="max-w-5xl mx-auto px-6 py-20">
+          <div className="max-w-md">
+            <h2 className="text-2xl font-bold text-gray-900">Join the newsletter</h2>
+            <p className="mt-2 text-sm text-gray-500">One email per week. Unsubscribe any time.</p>
+
+            {status === 'success' ? (
+              <div className="mt-8 p-5 bg-gray-50 border border-gray-200 rounded-lg">
+                <p className="text-sm font-semibold text-gray-900">You&apos;re in.</p>
+                <p className="mt-1 text-sm text-gray-500">Thanks for subscribing. First issue coming your way soon.</p>
+              </div>
+            ) : (
+              <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit}>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    Email address
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    className="px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start"
+                >
+                  Join the newsletter
+                </button>
+              </form>
+            )}
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-gray-100">
+        <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-gray-400">
+          <span>AI Ops Agency</span>
+          <div className="flex gap-4">
+            <Link href="/about" className="hover:text-gray-600 transition-colors">About</Link>
+            <Link href="/newsletter" className="hover:text-gray-600 transition-colors">Newsletter</Link>
+          </div>
+        </div>
+      </footer>
+    </>
+  )
+}
