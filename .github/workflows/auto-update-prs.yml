@@ -18,7 +18,8 @@ jobs:
         run: |
           # Wait for GitHub to compute mergeable state after push
           sleep 15
-          prs=$(gh pr list --repo ${{ github.repository }} --state open --json number,mergeable,headRefName --jq '.[] | select(.mergeable != "CONFLICTING") | .number')
+          # Only update PRs that are approved (pr_approved label) — avoids cascading bug-check re-runs
+          prs=$(gh pr list --repo ${{ github.repository }} --state open --label "pr_approved" --json number,mergeable --jq '.[] | select(.mergeable != "CONFLICTING") | .number')
           for pr in $prs; do
             echo "Updating PR #$pr..."
             gh pr update-branch $pr --repo ${{ github.repository }} || echo "PR #$pr skipped (up to date or conflict)"

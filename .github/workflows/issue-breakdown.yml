@@ -2,7 +2,7 @@ name: Issue Breakdown
 
 on:
   issues:
-    types: [opened]
+    types: [labeled]
 
 permissions:
   contents: read
@@ -11,8 +11,10 @@ permissions:
 jobs:
   breakdown:
     runs-on: ubuntu-latest
-    # Skip sub-issues (created by this agent with 'sub-issue' label)
-    if: ${{ !contains(github.event.issue.labels.*.name, 'sub-issue') }}
+    # Only fire when 'refined' label is added; skip sub-issues
+    if: |
+      github.event.label.name == 'refined' &&
+      !contains(github.event.issue.labels.*.name, 'sub-issue')
 
     steps:
       - name: Job Info

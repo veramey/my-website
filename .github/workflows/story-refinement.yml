@@ -1,0 +1,99 @@
+name: Story Refinement
+
+run-name: "Refinement #${{ github.event.issue.number }} : add technical solution"
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  refinement:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.label.name == 'intake-done' &&
+      !contains(github.event.issue.labels.*.name, 'sub-issue')
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔬 Story Refinement Started"
+          echo "📋 Issue: #${{ github.event.issue.number }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Write issue to file
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          mkdir -p input output
+          gh issue view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            > input/issue.md
+
+      - name: Run Claude — technical refinement
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude --dangerously-skip-permissions -p "
+          You are a senior Solution Architect for a Next.js 15 content website (TypeScript, Tailwind CSS).
+
+          Read input/issue.md and PRD.md. Read the existing code in src/ to understand current structure.
+
+          Your job: add a concise technical solution section to this issue.
+
+          Output to output/refinement.md (this will be APPENDED to the existing issue body):
+
+          ## Technical Solution
+
+          ### Approach
+          [2-3 sentences: how to implement this technically]
+
+          ### Files to Create/Modify
+          - \`src/path/to/file.tsx\` — [what to do here]
+          - [list all relevant files]
+
+          ### Key Notes
+          - [SEO, performance, accessibility, or TypeScript notes if relevant]
+          - [Tailwind classes or design patterns to follow]
+
+          Keep it actionable. A developer should be able to start implementing immediately.
+          "
+
+      - name: Append refinement and label refined
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          if [ ! -f output/refinement.md ]; then exit 0; fi
+
+          CURRENT_BODY=$(gh issue view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} --json body -q '.body')
+
+          gh issue edit ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body "${CURRENT_BODY}
+
+$(cat output/refinement.md)
+
+---
+_Refined by Story Refinement Agent (Claude Code)_"
+
+          gh label create "refined" --color "c2e0c6" --description "Issue refined with technical solution" \
+            --repo ${{ github.repository }} 2>/dev/null || true
+
+          gh issue edit ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --add-label "refined"
+
+          echo "✅ Issue refined and labeled refined"

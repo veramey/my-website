@@ -14,8 +14,10 @@ permissions:
 jobs:
   bug-check:
     runs-on: ubuntu-latest
-    # Only run on AI Teammate PRs (feature/issue-* branches)
-    if: ${{ startsWith(github.head_ref, 'feature/issue-') }}
+    # Only run on AI Teammate PRs (feature/issue-* or hotfix/issue-* branches)
+    if: |
+      startsWith(github.head_ref, 'feature/issue-') ||
+      startsWith(github.head_ref, 'hotfix/issue-')
     concurrency:
       group: bug-check-${{ github.event.pull_request.number }}
       cancel-in-progress: true
@@ -49,6 +51,15 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Ensure labels exist
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          gh label create "pr_approved" --color "0e8a16" --description "Approved for merge" \
+            --repo ${{ github.repository }} 2>/dev/null || true
+          gh label create "needs-rework" --color "e4e669" --description "Code review issues to fix" \
+            --repo ${{ github.repository }} 2>/dev/null || true
+
       - name: Fetch PR diff
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -57,7 +68,7 @@ jobs:
           gh pr diff ${{ github.event.pull_request.number }} \
             --repo ${{ github.repository }} \
             > input/pr_diff.md
-          echo "PR diff saved ($(wc -l < input/pr_diff.md) lines)"
+          echo "PR diff: $(wc -l < input/pr_diff.md) lines"
 
       - name: Run Claude — review PR diff
         env:
@@ -68,46 +79,49 @@ jobs:
 
           Read the PR diff in input/pr_diff.md.
 
-          Your job: identify any bugs, broken logic, missing edge cases, or accessibility issues.
+          Identify any bugs, broken logic, missing edge cases, or accessibility issues.
 
           Rules:
-          - Be specific: point to exact files and line numbers
+          - Be specific: name the exact file and what is wrong
           - Only flag real bugs, not style preferences
-          - If the code looks good, say so clearly
+          - If the code looks good, say so
 
           Output to output/review.md:
           - First line must be exactly: STATUS: APPROVED or STATUS: NEEDS_FIX
-          - Then a blank line
-          - Then your review notes (or 'No issues found.' if approved)
+          - Blank line
+          - Your review notes (or 'No issues found.' if approved)
           "
 
       - name: Build site
         run: npm run build
 
       - name: Run Playwright smoke tests
-        id: playwright
         run: |
           npx playwright test --reporter=line 2>&1 | tee output/playwright.log
-          echo "EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+          echo "PLAYWRIGHT_EXIT=${PIPESTATUS[0]}" >> $GITHUB_ENV
         continue-on-error: true
 
-      - name: Evaluate results and label PR
+      - name: Evaluate and apply labels
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           REVIEW_STATUS=$(head -1 output/review.md 2>/dev/null || echo "STATUS: NEEDS_FIX")
-          PLAYWRIGHT_OK="${{ env.EXIT_CODE }}"
+          PLAYWRIGHT_OK="${{ env.PLAYWRIGHT_EXIT }}"
 
           echo "Review: $REVIEW_STATUS"
           echo "Playwright exit: $PLAYWRIGHT_OK"
 
           if [[ "$REVIEW_STATUS" == "STATUS: APPROVED" && "$PLAYWRIGHT_OK" == "0" ]]; then
-            echo "✅ All checks passed — labeling pr_approved"
-            gh label create "pr_approved" --color "0e8a16" --description "Approved for merge" \
-              --repo ${{ github.repository }} 2>/dev/null || true
+            echo "✅ All checks passed"
+
+            # Remove needs-rework if present, add pr_approved
+            gh pr edit ${{ github.event.pull_request.number }} \
+              --repo ${{ github.repository }} \
+              --remove-label "needs-rework" 2>/dev/null || true
             gh pr edit ${{ github.event.pull_request.number }} \
               --repo ${{ github.repository }} \
               --add-label "pr_approved"
+
             gh pr comment ${{ github.event.pull_request.number }} \
               --repo ${{ github.repository }} \
               --body "✅ **Bug Check passed** — code review approved + Playwright smoke tests green.
@@ -115,38 +129,32 @@ jobs:
           Merging automatically via merge-trigger workflow.
 
           _Reviewed by Claude Code_"
+
           else
-            echo "❌ Checks failed — creating fix issue"
+            echo "❌ Checks failed"
 
             REVIEW_NOTES=$(tail -n +3 output/review.md 2>/dev/null || echo "Review failed to run.")
             PLAYWRIGHT_LOG=$(tail -50 output/playwright.log 2>/dev/null || echo "Playwright did not run.")
 
-            ISSUE_NUMBER=$(echo "${{ github.head_ref }}" | grep -oE '[0-9]+$')
-
-            gh label create "bug" --color "d73a4a" --description "Bug found in code review" \
-              --repo ${{ github.repository }} 2>/dev/null || true
-
-            gh issue create \
+            # Remove pr_approved if present, add needs-rework
+            gh pr edit ${{ github.event.pull_request.number }} \
               --repo ${{ github.repository }} \
-              --title "Fix: bug check failed on PR #${{ github.event.pull_request.number }}" \
-              --label "bug,sub-issue" \
-              --body "Parent: #${ISSUE_NUMBER}
-
-          ## Code Review
-          ${REVIEW_NOTES}
-
-          ## Playwright Output
-          \`\`\`
-          ${PLAYWRIGHT_LOG}
-          \`\`\`
-
-          Fix the issues above and re-push to branch \`${{ github.head_ref }}\`.
-
-          _Generated by Bug Check workflow_"
+              --remove-label "pr_approved" 2>/dev/null || true
+            gh pr edit ${{ github.event.pull_request.number }} \
+              --repo ${{ github.repository }} \
+              --add-label "needs-rework"
 
             gh pr comment ${{ github.event.pull_request.number }} \
               --repo ${{ github.repository }} \
-              --body "❌ **Bug Check failed** — see the newly created fix issue for details.
+              --body "❌ **Bug Check failed** — issues found below. PR Rework Agent will fix automatically.
+
+          ## Code Review
+          $REVIEW_NOTES
+
+          ## Playwright Output
+          \`\`\`
+          $PLAYWRIGHT_LOG
+          \`\`\`
 
           _Reviewed by Claude Code_"
           fi

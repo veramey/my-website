@@ -51,7 +51,7 @@ jobs:
           gh pr merge $PR \
             --repo ${{ github.repository }} \
             --squash \
-            --delete-branch
+            --delete-branch || echo "Merge skipped (already merged or closed)"
 
           echo "PR_NUMBER=$PR" >> $GITHUB_ENV
 

@@ -18,10 +18,10 @@ permissions:
 jobs:
   ai-teammate:
     runs-on: ubuntu-latest
-    # For label trigger: only fire on 'ready' label, skip sub-issues created by breakdown agent
+    # For label trigger: only fire on 'tests-ready' label on sub-issues
     if: |
       github.event_name == 'workflow_dispatch' ||
-      (github.event.label.name == 'ready' && contains(github.event.issue.labels.*.name, 'sub-issue'))
+      (github.event.label.name == 'tests-ready' && contains(github.event.issue.labels.*.name, 'sub-issue'))
     concurrency:
       group: ai-teammate-${{ inputs.issue_number || github.event.issue.number }}
       cancel-in-progress: false

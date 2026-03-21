@@ -1,0 +1,104 @@
+name: Intake Agent
+
+run-name: "Intake #${{ github.event.issue.number }} : structure issue"
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    # Skip sub-issues created by breakdown, and issues already processed
+    if: |
+      !contains(github.event.issue.labels.*.name, 'sub-issue') &&
+      !contains(github.event.issue.labels.*.name, 'intake-done') &&
+      !contains(github.event.issue.labels.*.name, 'bug')
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📥 Intake Agent Started"
+          echo "📋 Issue: #${{ github.event.issue.number }} — ${{ github.event.issue.title }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Write issue to file
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          mkdir -p input output
+          gh issue view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            > input/issue.md
+          cat input/issue.md
+
+      - name: Run Claude — structure issue
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude --dangerously-skip-permissions -p "
+          You are an experienced Product Owner and Business Analyst for an AI Ops content website for small agencies built with Next.js.
+
+          Read the GitHub issue in input/issue.md and PRD.md.
+
+          Your job: transform the raw idea into a well-structured development issue.
+
+          Output ONLY the new issue body to output/structured_issue.md using this exact format:
+
+          ## Goal
+          [One sentence: what this issue achieves and why it matters]
+
+          ## Context
+          [Why this is needed. Reference relevant PRD.md section, e.g. 'See PRD.md section 3.2']
+
+          ## Acceptance Criteria
+          - [ ] [Specific, testable criterion]
+          - [ ] [Specific, testable criterion]
+          - [ ] [Add 2-5 criteria total]
+
+          ## Out of Scope
+          - [What this issue explicitly does NOT include]
+
+          Rules:
+          - Be specific and implementable in a single coding session
+          - A developer should understand exactly what to build without asking questions
+          - Keep it concise — no fluff
+          "
+
+      - name: Update issue body and label
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          if [ ! -f output/structured_issue.md ]; then
+            echo "No structured issue generated — skipping"
+            exit 0
+          fi
+
+          gh issue edit ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body "$(cat output/structured_issue.md)
+
+---
+_Structured by Intake Agent (Claude Code)_"
+
+          gh label create "intake-done" --color "e4e669" --description "Issue structured by Intake Agent" \
+            --repo ${{ github.repository }} 2>/dev/null || true
+
+          gh issue edit ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --add-label "intake-done"
+
+          echo "✅ Issue structured and labeled intake-done"

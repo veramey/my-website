@@ -1,0 +1,134 @@
+name: Bug Fix Agent
+
+run-name: "Bug Fix #${{ github.event.issue.number }} : fix reported bug"
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bug-fix:
+    runs-on: ubuntu-latest
+    # Only fire on user-reported bugs (not sub-issues — those flow through ai-teammate)
+    if: |
+      github.event.label.name == 'bug' &&
+      !contains(github.event.issue.labels.*.name, 'sub-issue')
+    concurrency:
+      group: bug-fix-${{ github.event.issue.number }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🐛 Bug Fix Agent Started"
+          echo "📋 Issue: #${{ github.event.issue.number }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --progress=false
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Configure Git Author
+        run: |
+          git config --global user.name "AI Teammate"
+          git config --global user.email "agent.ai.native@gmail.com"
+
+      - name: Move issue to In progress
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          chmod +x scripts/update-project-status.sh
+          ./scripts/update-project-status.sh ${{ github.event.issue.number }} "In progress" || true
+
+      - name: Fetch issue
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          mkdir -p input output
+          gh issue view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} > input/issue.md
+          cat input/issue.md
+
+      - name: Create fix branch
+        run: |
+          BRANCH="hotfix/issue-${{ github.event.issue.number }}"
+          git checkout -b $BRANCH
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
+      - name: Run Claude — fix bug
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude --dangerously-skip-permissions -p "
+          You are a senior Next.js developer fixing a production bug.
+
+          Read input/issue.md — it describes a bug that needs to be fixed.
+          Read PRD.md for product context.
+          Read the existing code in src/ to find the root cause.
+
+          Instructions:
+          1. Understand the bug from the issue description
+          2. Find the root cause in the codebase
+          3. Fix it with the minimal number of changes
+          4. Do NOT add features or refactor unrelated code
+          5. Write output/summary.md with: root cause identified, fix applied, files changed
+
+          Start now.
+          "
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "fix: resolve bug from issue #${{ github.event.issue.number }}
+
+          Fixed by Bug Fix Agent via Claude Code.
+          Closes #${{ github.event.issue.number }}"
+          git push origin $BRANCH --force
+
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          SUMMARY=""
+          if [ -f output/summary.md ]; then SUMMARY=$(cat output/summary.md); fi
+
+          gh pr create \
+            --repo ${{ github.repository }} \
+            --title "fix: bug from issue #${{ github.event.issue.number }}" \
+            --body "$(cat <<EOF
+          ## Root Cause & Fix
+          $SUMMARY
+
+          Closes #${{ github.event.issue.number }}
+
+          ---
+          🤖 Fixed by Bug Fix Agent (Claude Code)
+          EOF
+          )" \
+            --base main \
+            --head $BRANCH || true
+
+      - name: Move issue to In review
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          ./scripts/update-project-status.sh ${{ github.event.issue.number }} "In review" || true
