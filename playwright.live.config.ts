@@ -8,7 +8,7 @@ export default defineConfig({
   reporter: 'line',
 
   use: {
-    baseURL: process.env.BASE_URL || 'https://veramey.github.io/my-website',
+    baseURL: process.env.BASE_URL || 'https://veramey.github.io/my-website/',
     screenshot: 'only-on-failure',
   },
 
