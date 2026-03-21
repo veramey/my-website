@@ -87,12 +87,12 @@ jobs:
             exit 0
           fi
 
+          printf '%s\n\n---\n_Structured by Intake Agent (Claude Code)_' \
+            "$(cat output/structured_issue.md)" > output/new_body.txt
+
           gh issue edit ${{ github.event.issue.number }} \
             --repo ${{ github.repository }} \
-            --body "$(cat output/structured_issue.md)
-
----
-_Structured by Intake Agent (Claude Code)_"
+            --body-file output/new_body.txt
 
           gh label create "intake-done" --color "e4e669" --description "Issue structured by Intake Agent" \
             --repo ${{ github.repository }} 2>/dev/null || true
