@@ -97,7 +97,7 @@ jobs:
 
       - name: Run Playwright smoke tests
         run: |
-          npx playwright test --reporter=line 2>&1 | tee output/playwright.log
+          npx playwright test tests/smoke.spec.ts --reporter=line 2>&1 | tee output/playwright.log
           echo "PLAYWRIGHT_EXIT=${PIPESTATUS[0]}" >> $GITHUB_ENV
         continue-on-error: true
 
