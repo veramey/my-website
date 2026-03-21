@@ -101,4 +101,8 @@ jobs:
             --repo ${{ github.repository }} \
             --add-label "intake-done"
 
+          # Add to project board
+          chmod +x scripts/add-to-project.sh
+          ./scripts/add-to-project.sh ${{ github.event.issue.number }} "Backlog" || true
+
           echo "✅ Issue structured and labeled intake-done"

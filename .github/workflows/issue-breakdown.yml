@@ -109,9 +109,18 @@ jobs:
 
           export REPO=${{ github.repository }}
           chmod +x output/create_issues.sh
-          bash output/create_issues.sh
 
-          echo "✅ Sub-issues created"
+          # Create sub-issues and add each to the project board
+          chmod +x scripts/add-to-project.sh
+          while IFS= read -r line; do
+            echo "$line"
+            ISSUE_NUM=$(echo "$line" | grep -oE '/issues/[0-9]+' | grep -oE '[0-9]+' || true)
+            if [ -n "$ISSUE_NUM" ]; then
+              ./scripts/add-to-project.sh "$ISSUE_NUM" "Backlog" || true
+            fi
+          done < <(bash output/create_issues.sh)
+
+          echo "✅ Sub-issues created and added to project"
 
       - name: Comment on parent issue
         env:
