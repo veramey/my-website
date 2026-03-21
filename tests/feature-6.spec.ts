@@ -30,18 +30,15 @@ test('article page lists all 5 tools', async ({ page }) => {
   }
 });
 
-test('article page has newsletter signup form', async ({ page }) => {
+test('article page has newsletter section', async ({ page }) => {
   await page.goto(PATH);
-  const emailInput = page.locator('input[type="email"]');
-  await expect(emailInput).toBeVisible();
-  const subscribeBtn = page.locator('button', { hasText: 'Subscribe' });
-  await expect(subscribeBtn).toBeVisible();
+  await expect(page.getByText('Get weekly practical AI systems')).toBeVisible();
 });
 
 test('article page has related links to other articles', async ({ page }) => {
   await page.goto(PATH);
-  await expect(page.locator('a[href="/tools/best-ai-tools-small-agencies/"]')).toBeVisible();
-  await expect(page.locator('a[href="/guides/automate-client-onboarding-small-agency/"]')).toBeVisible();
+  await expect(page.locator('a[href="/tools/best-ai-tools-small-agencies"]')).toBeVisible();
+  await expect(page.locator('a[href="/guides/automate-client-onboarding-small-agency"]')).toBeVisible();
 });
 
 test('article page Tools category label is shown', async ({ page }) => {

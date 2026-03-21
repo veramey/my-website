@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
@@ -56,8 +55,6 @@ const description =
   'A practical comparison of AI meeting assistants for small agency teams — focused on what actually saves time, not just what has the best marketing.'
 
 export default function BestAIMeetingAssistants() {
-  const [submitted, setSubmitted] = useState(false)
-
   return (
     <>
       <Head>
@@ -215,27 +212,7 @@ export default function BestAIMeetingAssistants() {
               <p className="mt-2 text-sm text-gray-500">
                 One workflow, one tool, one template — every week. No hype.
               </p>
-              {submitted ? (
-                <p className="mt-5 text-sm text-gray-600">Thanks! You&apos;re on the list.</p>
-              ) : (
-                <form className="mt-5 flex gap-2" onSubmit={(e) => { e.preventDefault(); setSubmitted(true) }}>
-                  <label htmlFor="newsletter-email" className="sr-only">Email address</label>
-                  <input
-                    id="newsletter-email"
-                    type="email"
-                    aria-label="Email address"
-                    placeholder="your@email.com"
-                    className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors whitespace-nowrap"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-              )}
+              <p className="mt-5 text-sm text-gray-500">Newsletter signup coming soon.</p>
             </div>
           </div>
         </section>
