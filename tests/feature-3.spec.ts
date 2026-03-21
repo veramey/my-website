@@ -36,11 +36,6 @@ test('Newsletter page has a working signup form with email input and submit butt
   await expect(emailInput).toBeVisible();
   await expect(submitButton).toBeVisible();
   await expect(submitButton).toContainText('Join the newsletter');
-
-  await emailInput.fill('test@example.com');
-  await submitButton.click();
-  // Form submission is a no-op (preventDefault); page should remain
-  await expect(page.locator('h1')).toBeVisible();
 });
 
 test('Newsletter page has nav and footer', async ({ page }) => {
@@ -48,4 +43,44 @@ test('Newsletter page has nav and footer', async ({ page }) => {
 
   await expect(page.locator('nav')).toBeVisible();
   await expect(page.locator('footer')).toBeVisible();
+});
+
+test('Newsletter form shows success state when submission succeeds', async ({ page }) => {
+  await page.route('/api/subscribe', (route) => {
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+  });
+
+  await page.goto('/newsletter');
+  await page.locator('input[type="email"]').fill('test@example.com');
+  await page.locator('button[type="submit"]').click();
+
+  await expect(page.locator('[role="status"]')).toContainText("You're subscribed!");
+  await expect(page.locator('form')).not.toBeVisible();
+});
+
+test('Newsletter form shows error state when submission fails', async ({ page }) => {
+  await page.route('/api/subscribe', (route) => {
+    route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: 'Server error' }) });
+  });
+
+  await page.goto('/newsletter');
+  await page.locator('input[type="email"]').fill('test@agency.com');
+  await page.locator('button[type="submit"]').click();
+
+  await expect(page.locator('#email-error')).toContainText('Something went wrong');
+  await expect(page.locator('input[type="email"]')).toBeVisible();
+});
+
+test('Newsletter form disables inputs while submitting', async ({ page }) => {
+  await page.route('/api/subscribe', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+  });
+
+  await page.goto('/newsletter');
+  await page.locator('input[type="email"]').fill('test@example.com');
+  await page.locator('button[type="submit"]').click();
+
+  await expect(page.locator('input[type="email"]')).toBeDisabled();
+  await expect(page.locator('button[type="submit"]')).toBeDisabled();
 });

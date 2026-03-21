@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import Nav from '@/components/Nav'
 
 const perks = [
@@ -9,6 +11,28 @@ const perks = [
 ]
 
 export default function Newsletter() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setStatus('loading')
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (res.ok) {
+        setStatus('success')
+      } else {
+        setStatus('error')
+      }
+    } catch {
+      setStatus('error')
+    }
+  }
+
   return (
     <>
       <Head>
@@ -55,20 +79,42 @@ export default function Newsletter() {
           <div className="max-w-md">
             <h2 className="text-xl font-bold text-gray-900">Join the newsletter</h2>
             <p className="mt-2 text-sm text-gray-500">One email a week. Unsubscribe any time.</p>
-            <form className="mt-6 flex gap-2" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder="your@email.com"
-                className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
-                required
-              />
-              <button
-                type="submit"
-                className="px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors whitespace-nowrap"
-              >
-                Join the newsletter
-              </button>
-            </form>
+
+            {/* Always-rendered live region so screen readers catch updates */}
+            <p role="status" aria-live="polite" aria-atomic="true" className="mt-4 text-sm text-green-700">
+              {status === 'success' ? "You're subscribed! Check your inbox for a confirmation email." : ''}
+            </p>
+
+            {status !== 'success' && (
+              <form className="mt-2 flex gap-2" onSubmit={handleSubmit}>
+                <label htmlFor="email" className="sr-only">Email address</label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
+                  required
+                  disabled={status === 'loading'}
+                  aria-invalid={status === 'error' ? 'true' : undefined}
+                  aria-describedby={status === 'error' ? 'email-error' : undefined}
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors whitespace-nowrap disabled:opacity-60"
+                  disabled={status === 'loading'}
+                >
+                  {status === 'loading' ? 'Subscribing…' : 'Join the newsletter'}
+                </button>
+              </form>
+            )}
+
+            {status === 'error' && (
+              <p id="email-error" role="alert" className="mt-3 text-sm text-red-600">
+                Something went wrong. Please try again.
+              </p>
+            )}
           </div>
         </section>
       </main>
@@ -77,8 +123,8 @@ export default function Newsletter() {
         <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-gray-400">
           <span>AI Ops Agency</span>
           <div className="flex gap-4">
-            <a href="/about" className="hover:text-gray-600 transition-colors">About</a>
-            <a href="/newsletter" className="hover:text-gray-600 transition-colors">Newsletter</a>
+            <Link href="/about" className="hover:text-gray-600 transition-colors">About</Link>
+            <Link href="/newsletter" className="hover:text-gray-600 transition-colors">Newsletter</Link>
           </div>
         </div>
       </footer>
