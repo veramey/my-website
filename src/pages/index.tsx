@@ -45,12 +45,12 @@ const pillars = [
   {
     title: 'Client Onboarding & Delivery',
     topics: ['Intake and intake forms', 'Proposals and kickoffs', 'Client follow-ups', 'Handoff processes'],
-    href: '/guides',
+    href: '/guides#onboarding',
   },
   {
     title: 'Internal Ops & SOPs',
     topics: ['Process documentation', 'Meeting workflows', 'Recurring task systems', 'Internal reporting'],
-    href: '/guides',
+    href: '/guides#internal-ops',
   },
   {
     title: 'Tools & Stacks',

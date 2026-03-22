@@ -10,6 +10,11 @@ const SUBCATEGORY_ORDER: GuideSubcategory[] = [
   'Team Productivity',
 ]
 
+const SUBCATEGORY_ANCHOR: Partial<Record<GuideSubcategory, string>> = {
+  'Client Onboarding': 'onboarding',
+  'Internal Operations': 'internal-ops',
+}
+
 function groupBySubcategory(articles: typeof guides) {
   const map = new Map<GuideSubcategory, typeof guides>()
   for (const article of articles) {
@@ -52,7 +57,7 @@ export default function GuidesIndex() {
         {subcategories.length === 0 ? null : (
           <div className="mt-14 space-y-14">
             {subcategories.map((subcategory) => (
-              <section key={subcategory}>
+              <section key={subcategory} id={SUBCATEGORY_ANCHOR[subcategory]}>
                 <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
                   {subcategory}
                 </h2>
