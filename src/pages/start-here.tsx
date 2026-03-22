@@ -51,6 +51,8 @@ export default function StartHere() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="Start Here — AI Ops for Small Agencies" />
         <meta property="og:description" content="New here? This is your guided entry point into practical AI operations content for small agencies." />
+        <meta property="og:url" content="https://www.aiopagency.com/start-here" />
+        <link rel="canonical" href="https://www.aiopagency.com/start-here" />
       </Head>
 
       <Nav />
