@@ -144,8 +144,9 @@ jobs:
           gh issue close \$PARENT_NUM --repo \$REPO --reason completed
           echo 'CLOSE_RESULT=done' >> \$GITHUB_ENV
 
-          If criteria are NOT met — comment with details and do NOT close:
-          gh issue comment \$PARENT_NUM --repo \$REPO --body \"⚠️ **QA verification failed** — parent issue not closed.
+          If criteria are NOT met — create new sub-issues for each gap and continue the pipeline:
+          1. Comment on the parent explaining what's missing:
+          gh issue comment \$PARENT_NUM --repo \$REPO --body \"⚠️ **QA found unmet criteria** — creating sub-issues for the gaps.
 
           ## What's missing
           [specific list of unmet criteria]
@@ -153,7 +154,24 @@ jobs:
           ## What was implemented
           [brief summary of what sub-issues did cover]
 
+          New sub-issues created and queued for implementation.
+
           _QA by Close Parent Agent_\"
+
+          2. For each unmet criterion, create a new sub-issue:
+          gh issue create --repo \$REPO \
+            --title 'SPECIFIC_TASK_TITLE' \
+            --body 'Parent: #PARENT_NUM
+
+          DESCRIPTION_OF_WHAT_IS_MISSING
+
+          See parent issue #PARENT_NUM for full context.' \
+            --label 'sub-issue,ready'
+
+          Ensure label exists first:
+          gh label create 'ready' --color '0e8a16' --repo \$REPO 2>/dev/null || true
+          gh label create 'sub-issue' --color '0075ca' --repo \$REPO 2>/dev/null || true
+
           echo 'CLOSE_RESULT=blocked' >> \$GITHUB_ENV
 
           Use PARENT_NUM=$PARENT_NUM as the issue number.
