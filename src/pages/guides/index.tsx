@@ -44,6 +44,8 @@ export default function GuidesIndex() {
           property="og:description"
           content="Practical how-to guides and workflow systems for small agencies using AI — from client onboarding to internal operations."
         />
+        <meta property="og:url" content="https://www.aiopagency.com/guides" />
+        <link rel="canonical" href="https://www.aiopagency.com/guides" />
       </Head>
 
       <Nav />
