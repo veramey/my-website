@@ -47,6 +47,8 @@ export default function Newsletter() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="Newsletter — AI Ops for Small Agencies" />
         <meta property="og:description" content="Weekly practical AI systems for small agencies. One workflow, one tool, one template — every week. No hype." />
+        <meta property="og:url" content="https://www.aiopagency.com/newsletter" />
+        <link rel="canonical" href="https://www.aiopagency.com/newsletter" />
       </Head>
 
       <Nav />
