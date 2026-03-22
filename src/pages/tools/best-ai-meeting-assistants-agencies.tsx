@@ -20,6 +20,7 @@ export default function BestAIMeetingAssistants() {
           content="The best AI meeting assistants for small agencies in 2026. Honest comparisons of Fireflies, Otter, Fathom, and more — with use cases, pricing, and what to pick for your team."
         />
         <meta property="og:url" content={CANONICAL_URL} />
+        <link rel="canonical" href={CANONICAL_URL} />
       </Head>
 
       <Nav />

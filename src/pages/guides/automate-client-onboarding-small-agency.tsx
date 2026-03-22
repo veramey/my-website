@@ -20,6 +20,7 @@ export default function AutomateClientOnboarding() {
           content="A step-by-step workflow for small agencies: automate intake, AI-process responses, prep kickoffs, and hand off clients — without the manual back-and-forth."
         />
         <meta property="og:url" content={CANONICAL_URL} />
+        <link rel="canonical" href={CANONICAL_URL} />
       </Head>
 
       <Nav />
