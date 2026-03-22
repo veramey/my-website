@@ -21,4 +21,20 @@ export const guides: GuideArticle[] = [
     subcategory: 'Client Onboarding',
     href: '/guides/automate-client-onboarding-small-agency',
   },
+  {
+    slug: 'discovery-call-to-proposal-workflow-agency',
+    title: 'How to Turn Discovery Calls into Proposals with AI',
+    description:
+      'A step-by-step AI workflow to go from discovery call recording to polished proposal in under 45 minutes.',
+    subcategory: 'Delivery & Client Work',
+    href: '/guides/discovery-call-to-proposal-workflow-agency',
+  },
+  {
+    slug: '7-workflows-automate-small-agency',
+    title: '7 Workflows Every Small Agency Should Automate with AI',
+    description:
+      'The 7 highest-ROI automations for small agencies — from client onboarding to weekly reporting.',
+    subcategory: 'Internal Operations',
+    href: '/guides/7-workflows-automate-small-agency',
+  },
 ]
