@@ -80,10 +80,14 @@ export default function Home() {
           body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text }),
         }
       )
-      if (!res.ok) throw new Error('Failed')
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(JSON.stringify(err))
+      }
       setStatus('success')
       setEmail('')
-    } catch {
+    } catch (err) {
+      console.error('Telegram error:', err)
       setStatus('error')
     }
   }
