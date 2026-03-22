@@ -35,7 +35,8 @@ export default function ClientOnboardingAiChecklist() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="AI Ops Starter Kit for Small Agencies — Free Template" />
         <meta property="og:description" content="Free download: AI Ops Starter Kit for small agencies. 10 workflow templates, starter tool stack, onboarding checklist, and SOP prompt pack." />
-        <link rel="canonical" href="https://aiopsagency.com/templates/client-onboarding-ai-checklist" />
+        <meta property="og:url" content="https://www.aiopagency.com/templates/client-onboarding-ai-checklist" />
+        <link rel="canonical" href="https://www.aiopagency.com/templates/client-onboarding-ai-checklist" />
       </Head>
 
       <Nav />
