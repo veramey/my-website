@@ -1,0 +1,138 @@
+name: Pipeline Monitor
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # Every 30 minutes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pipeline-monitor
+      cancel-in-progress: true
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔍 Pipeline Monitor Started"
+          echo "⏰ $(date -u)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      # ── 1. Re-trigger stuck PR Rework ────────────────────────────────────────
+      - name: Re-trigger stuck needs-rework PRs
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          echo "Checking for PRs stuck with needs-rework..."
+
+          STUCK_PRS=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --label "needs-rework" \
+            --json number,updatedAt \
+            --jq '.[] | select(
+              (now - (.updatedAt | fromdateiso8601)) > 1800
+            ) | .number')
+
+          if [ -z "$STUCK_PRS" ]; then
+            echo "✅ No stuck needs-rework PRs found"
+          else
+            for PR in $STUCK_PRS; do
+              echo "🔁 Re-triggering PR Rework for PR #$PR (stuck >30min)"
+              gh pr edit $PR --repo ${{ github.repository }} \
+                --remove-label "needs-rework" 2>/dev/null || true
+              sleep 3
+              gh pr edit $PR --repo ${{ github.repository }} \
+                --add-label "needs-rework" 2>/dev/null || true
+              echo "✅ Re-triggered PR #$PR"
+            done
+          fi
+
+      # ── 2. Re-trigger PRs with pr_approved but no Unit Tests in last 30min ──
+      - name: Re-trigger stalled pr_approved PRs
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          echo "Checking for pr_approved PRs with no recent Unit Tests run..."
+
+          APPROVED_PRS=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --label "pr_approved" \
+            --json number,headRefName,updatedAt \
+            --jq '.[] | select(
+              (now - (.updatedAt | fromdateiso8601)) > 1800
+            ) | "\(.number) \(.headRefName)"')
+
+          if [ -z "$APPROVED_PRS" ]; then
+            echo "✅ No stalled pr_approved PRs found"
+          else
+            echo "$APPROVED_PRS" | while read PR_NUM BRANCH; do
+              echo "⚠️ PR #$PR_NUM ($BRANCH) has pr_approved but seems stalled — re-labeling"
+              gh pr edit $PR_NUM --repo ${{ github.repository }} \
+                --remove-label "pr_approved" 2>/dev/null || true
+              sleep 3
+              gh pr edit $PR_NUM --repo ${{ github.repository }} \
+                --add-label "pr_approved" 2>/dev/null || true
+              echo "✅ Re-triggered Unit Tests for PR #$PR_NUM"
+            done
+          fi
+
+      # ── 3. Report blocked PRs ─────────────────────────────────────────────────
+      - name: Report blocked PRs
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          BLOCKED=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --label "blocked" \
+            --json number,title,url \
+            --jq '.[] | "PR #\(.number): \(.title) → \(.url)"')
+
+          if [ -z "$BLOCKED" ]; then
+            echo "✅ No blocked PRs"
+          else
+            echo "🚫 BLOCKED PRs (require human review):"
+            echo "$BLOCKED"
+          fi
+
+      # ── 4. Summary ────────────────────────────────────────────────────────────
+      - name: Pipeline summary
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          OPEN_ISSUES=$(gh issue list --repo ${{ github.repository }} --state open --json number --jq 'length')
+          OPEN_PRS=$(gh pr list --repo ${{ github.repository }} --state open --json number --jq 'length')
+          NEEDS_REWORK=$(gh pr list --repo ${{ github.repository }} --state open --label "needs-rework" --json number --jq 'length')
+          APPROVED=$(gh pr list --repo ${{ github.repository }} --state open --label "pr_approved" --json number --jq 'length')
+          BLOCKED=$(gh pr list --repo ${{ github.repository }} --state open --label "blocked" --json number --jq 'length')
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📊 Pipeline Summary"
+          echo "   Open issues:      $OPEN_ISSUES"
+          echo "   Open PRs:         $OPEN_PRS"
+          echo "   needs-rework PRs: $NEEDS_REWORK"
+          echo "   pr_approved PRs:  $APPROVED"
+          echo "   blocked PRs:      $BLOCKED"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          if [ "$BLOCKED" -gt "0" ]; then
+            echo "🔴 Pipeline has $BLOCKED blocked PR(s) — human review required"
+          elif [ "$NEEDS_REWORK" -gt "0" ]; then
+            echo "🟡 Pipeline has $NEEDS_REWORK PR(s) in rework — monitoring"
+          else
+            echo "🟢 Pipeline healthy"
+          fi

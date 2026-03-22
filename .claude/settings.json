@@ -1,5 +1,10 @@
 {
   "enabledPlugins": {
     "context7@claude-plugins-official": true
-  }
+  },
+  "skills": [
+    ".claude/skills/pipeline-status.md",
+    ".claude/skills/trigger-issue.md",
+    ".claude/skills/check-live.md"
+  ]
 }
