@@ -26,13 +26,13 @@ const featuredContent = [
 const startHereCards = [
   {
     number: '01',
-    title: 'Best AI tools for small agencies',
-    href: '/tools/best-ai-tools-small-agencies',
+    title: 'Browse all AI tool recommendations',
+    href: '/tools',
   },
   {
     number: '02',
-    title: 'How to automate client onboarding',
-    href: '/guides/automate-client-onboarding-small-agency',
+    title: 'Explore all implementation guides',
+    href: '/guides',
   },
   {
     number: '03',
