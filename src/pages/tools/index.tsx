@@ -32,6 +32,8 @@ export default function ToolsIndex() {
           property="og:description"
           content="Tool reviews, comparisons, and stack recommendations for small agencies using AI — honest, practical, no affiliate fluff."
         />
+        <meta property="og:url" content="https://www.aiopagency.com/tools" />
+        <link rel="canonical" href="https://www.aiopagency.com/tools" />
       </Head>
 
       <Nav />
