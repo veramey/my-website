@@ -10,9 +10,17 @@ permissions:
 jobs:
   close-parent:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
     if: contains(github.event.issue.labels.*.name, 'sub-issue')
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
       - name: Find and close parent if all sub-issues done
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -66,3 +74,13 @@ jobs:
           gh issue close $PARENT_NUM \
             --repo ${{ github.repository }} \
             --reason completed
+
+          echo "PARENT_NUM=$PARENT_NUM" >> $GITHUB_ENV
+
+      - name: Move parent issue to Done on project board
+        if: env.PARENT_NUM != ''
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          chmod +x scripts/update-project-status.sh
+          ./scripts/update-project-status.sh "$PARENT_NUM" "Done" || true
