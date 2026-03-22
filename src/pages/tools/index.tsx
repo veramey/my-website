@@ -15,6 +15,18 @@ const tools = [
     href: '/tools/best-ai-meeting-assistants-agencies',
     subcategory: 'Best Tools',
   },
+  {
+    title: 'Best AI Stack for Small Agencies Under $150/Month',
+    description: 'A lean but fully functional AI ops stack for small agencies — covering writing, meetings, automation, and workspace tools.',
+    href: '/tools/best-ai-stack-agencies-under-150',
+    subcategory: 'Best Tools',
+  },
+  {
+    title: 'Best AI Tools for SOPs and Internal Documentation (2026)',
+    description: 'The tools that actually make building and maintaining SOPs fast — for agencies that want to standardize without the overhead.',
+    href: '/tools/best-ai-tools-sops-small-agencies',
+    subcategory: 'Best Tools',
+  },
 ]
 
 export default function ToolsIndex() {
