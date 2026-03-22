@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { useState } from 'react'
 import Nav from '@/components/Nav'
 
+const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
+const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
+
 const benefits = [
   { label: '1 practical workflow', description: 'A system you can implement this week.' },
   { label: '1 tool recommendation', description: 'Honest picks — no affiliate noise.' },
@@ -12,11 +15,28 @@ const benefits = [
 
 export default function Newsletter() {
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'success'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setStatus('success')
+    setStatus('loading')
+    try {
+      const text = `📧 New newsletter subscriber (newsletter page):\n${email}`
+      const params = new URLSearchParams({ chat_id: TELEGRAM_CHAT_ID!, text })
+      const res = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        { method: 'POST', body: params }
+      )
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(JSON.stringify(err))
+      }
+      setStatus('success')
+      setEmail('')
+    } catch (err) {
+      console.error('Telegram error:', err)
+      setStatus('error')
+    }
   }
 
   return (
@@ -84,15 +104,20 @@ export default function Newsletter() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
                     required
+                    disabled={status === 'loading'}
                     className="px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start"
+                  disabled={status === 'loading'}
+                  className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start disabled:opacity-50"
                 >
-                  Join the newsletter
+                  {status === 'loading' ? 'Sending…' : 'Join the newsletter'}
                 </button>
+                {status === 'error' && (
+                  <p className="text-xs text-red-500">Something went wrong — try again.</p>
+                )}
               </form>
             )}
           </div>

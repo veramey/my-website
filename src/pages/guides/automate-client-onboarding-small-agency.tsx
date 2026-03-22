@@ -158,7 +158,7 @@ export default function AutomateClientOnboarding() {
             <p className="mt-4 text-sm text-gray-500">
               For a complete set of tools and systems to support this workflow, download the{' '}
               <Link
-                href="/templates/ai-ops-starter-kit"
+                href="/templates/client-onboarding-ai-checklist"
                 className="text-blue-600 hover:text-blue-700 underline"
               >
                 AI Ops Starter Kit for small agencies
