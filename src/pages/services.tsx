@@ -1,6 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
 import Nav from '@/components/Nav'
+
+const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
+const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
 
 const services = [
   {
@@ -14,6 +18,31 @@ const services = [
 ]
 
 export default function Services() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setStatus('loading')
+    try {
+      const text = `🛎️ New services waitlist signup:\n${email}`
+      const params = new URLSearchParams({ chat_id: TELEGRAM_CHAT_ID!, text })
+      const res = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        { method: 'POST', body: params }
+      )
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(JSON.stringify(err))
+      }
+      setStatus('success')
+      setEmail('')
+    } catch (err) {
+      console.error('Telegram error:', err)
+      setStatus('error')
+    }
+  }
+
   return (
     <>
       <Head>
@@ -55,6 +84,52 @@ export default function Services() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Waitlist form */}
+        <section className="max-w-5xl mx-auto px-6 py-20">
+          <div className="max-w-md">
+            <h2 className="text-2xl font-bold text-gray-900">Join the waitlist</h2>
+            <p className="mt-2 text-sm text-gray-500">Be first to know when services open up.</p>
+
+            {status === 'success' ? (
+              <div className="mt-8 p-5 bg-gray-50 border border-gray-200 rounded-lg">
+                <p className="text-sm font-semibold text-gray-900">You&apos;re on the list.</p>
+                <p className="mt-1 text-sm text-gray-500">Thanks for signing up. We&apos;ll be in touch when spots open.</p>
+              </div>
+            ) : (
+              <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit}>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="waitlist-email" className="text-sm font-medium text-gray-700">
+                    Email address
+                  </label>
+                  <input
+                    id="waitlist-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (status === 'error') setStatus('idle')
+                    }}
+                    placeholder="your@email.com"
+                    required
+                    disabled={status === 'loading'}
+                    className="px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={status === 'loading'}
+                  className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start disabled:opacity-50"
+                >
+                  {status === 'loading' ? 'Sending…' : 'Join the waitlist'}
+                </button>
+                {status === 'error' && (
+                  <p className="text-xs text-red-500">Something went wrong — try again.</p>
+                )}
+              </form>
+            )}
           </div>
         </section>
       </main>
