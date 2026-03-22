@@ -2,14 +2,14 @@ name: Unit Tests
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
+    types: [labeled]
 
 jobs:
   test-web:
     name: Build & test
     runs-on: ubuntu-latest
     # Only run when pr_approved label is present — prevents firing on needs-rework events
-    if: contains(github.event.pull_request.labels.*.name, 'pr_approved')
+    if: github.event.label.name == 'pr_approved'
 
     steps:
       - name: Checkout repository
