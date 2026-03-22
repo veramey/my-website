@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { useState } from 'react'
 import Nav from '@/components/Nav'
 
+const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
+const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
+
 const whatIsInside = [
   { title: '10 workflow templates', description: 'Ready-to-use AI workflows for intake, kickoff, delivery, and follow-up.' },
   { title: 'Starter tool stack', description: 'A lean, opinionated list of tools that work for 2–10 person agencies.' },
@@ -20,11 +23,28 @@ const howToUseSteps = [
 
 export default function ClientOnboardingAiChecklist() {
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'success'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setStatus('success')
+    setStatus('loading')
+    try {
+      const text = `📥 New lead magnet download (AI Ops Starter Kit):\n${email}`
+      const params = new URLSearchParams({ chat_id: TELEGRAM_CHAT_ID!, text })
+      const res = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        { method: 'POST', body: params }
+      )
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(JSON.stringify(err))
+      }
+      setStatus('success')
+      setEmail('')
+    } catch (err) {
+      console.error('Telegram error:', err)
+      setStatus('error')
+    }
   }
 
   return (
@@ -147,15 +167,20 @@ export default function ClientOnboardingAiChecklist() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
                       required
+                      disabled={status === 'loading'}
                       className="px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start"
+                    disabled={status === 'loading'}
+                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start disabled:opacity-50"
                   >
-                    Download free
+                    {status === 'loading' ? 'Sending…' : 'Download free'}
                   </button>
+                  {status === 'error' && (
+                    <p className="text-xs text-red-500">Something went wrong — try again.</p>
+                  )}
                 </form>
               )}
             </div>
