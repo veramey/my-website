@@ -1,0 +1,275 @@
+name: Content Health Check
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'   # Every Monday at 9:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  content-health:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔍 Content Health Check Started"
+          echo "⏰ $(date -u)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --progress=false
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build site
+        run: npm run build
+
+      - name: Run internal link checker
+        id: links
+        run: |
+          mkdir -p output
+
+          cat > output/check-links.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          // Find all .tsx files in src/
+          function findFiles(dir, ext) {
+            let results = [];
+            const items = fs.readdirSync(dir);
+            for (const item of items) {
+              const full = path.join(dir, item);
+              if (fs.statSync(full).isDirectory()) {
+                results = results.concat(findFiles(full, ext));
+              } else if (item.endsWith(ext)) {
+                results.push(full);
+              }
+            }
+            return results;
+          }
+
+          // Extract all internal hrefs
+          const files = findFiles('src', '.tsx');
+          const hrefRegex = /href=["'](\\/[^"'?#]+)["']/g;
+          const allLinks = new Set();
+
+          for (const file of files) {
+            const content = fs.readFileSync(file, 'utf8');
+            let match;
+            while ((match = hrefRegex.exec(content)) !== null) {
+              allLinks.add(match[1]);
+            }
+          }
+
+          // Find all existing pages
+          function getExistingPages(dir) {
+            const pages = new Set(['/']);
+            function walk(d, prefix) {
+              const items = fs.readdirSync(d);
+              for (const item of items) {
+                const full = path.join(d, item);
+                if (fs.statSync(full).isDirectory()) {
+                  walk(full, prefix + '/' + item);
+                } else if (item.endsWith('.tsx') && item !== '_app.tsx' && item !== '_document.tsx') {
+                  const pagePath = prefix + '/' + item.replace(/\.tsx$/, '').replace(/\/index$/, '');
+                  pages.add(pagePath === '' ? '/' : pagePath);
+                }
+              }
+            }
+            walk(dir, '');
+            return pages;
+          }
+
+          const existingPages = getExistingPages('src/pages');
+
+          // Check for broken links
+          const broken = [];
+          for (const link of allLinks) {
+            // Skip external links, anchors, and dynamic routes
+            if (link.startsWith('http') || link.includes('#') || link.includes('[')) continue;
+            // Normalize trailing slash
+            const normalized = link.replace(/\/$/, '') || '/';
+            if (!existingPages.has(normalized) && !existingPages.has(normalized + '/index')) {
+              broken.push(link);
+            }
+          }
+
+          const report = {
+            totalLinks: allLinks.size,
+            totalPages: existingPages.size,
+            brokenLinks: broken,
+            existingPages: [...existingPages].sort()
+          };
+
+          fs.writeFileSync('output/link-report.json', JSON.stringify(report, null, 2));
+          console.log(JSON.stringify(report, null, 2));
+          EOF
+
+          node output/check-links.js
+
+      - name: Check missing SEO meta tags
+        id: seo
+        run: |
+          cat > output/check-seo.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          function findFiles(dir, ext) {
+            let results = [];
+            try {
+              const items = fs.readdirSync(dir);
+              for (const item of items) {
+                const full = path.join(dir, item);
+                if (fs.statSync(full).isDirectory()) {
+                  results = results.concat(findFiles(full, ext));
+                } else if (item.endsWith(ext)) {
+                  results.push(full);
+                }
+              }
+            } catch(e) {}
+            return results;
+          }
+
+          const ignore = ['_app.tsx', '_document.tsx', '404.tsx'];
+          const files = findFiles('src/pages', '.tsx')
+            .filter(f => !ignore.some(i => f.endsWith(i)));
+
+          const issues = [];
+
+          for (const file of files) {
+            const content = fs.readFileSync(file, 'utf8');
+            const pageName = file.replace('src/pages/', '');
+            const pageIssues = [];
+
+            if (!content.includes('<title>') && !content.includes('og:title')) {
+              pageIssues.push('missing <title>');
+            }
+            if (!content.includes('name="description"') && !content.includes('og:description')) {
+              pageIssues.push('missing meta description');
+            }
+            if (!content.includes('og:url') && !content.includes('canonical')) {
+              pageIssues.push('missing canonical/og:url');
+            }
+
+            if (pageIssues.length > 0) {
+              issues.push({ page: pageName, issues: pageIssues });
+            }
+          }
+
+          const hasSitemap = fs.existsSync('public/sitemap.xml');
+          const hasRobots = fs.existsSync('public/robots.txt');
+
+          const report = {
+            pagesChecked: files.length,
+            pagesWithIssues: issues.length,
+            issues,
+            sitemap: hasSitemap ? 'present' : 'MISSING',
+            robots: hasRobots ? 'present' : 'MISSING'
+          };
+
+          fs.writeFileSync('output/seo-report.json', JSON.stringify(report, null, 2));
+          console.log(JSON.stringify(report, null, 2));
+          EOF
+
+          node output/check-seo.js
+
+      - name: Generate report and create issue if needed
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          LINK_REPORT=$(cat output/link-report.json)
+          SEO_REPORT=$(cat output/seo-report.json)
+
+          BROKEN_COUNT=$(echo "$LINK_REPORT" | node -e "
+            const d=require('fs').readFileSync('/dev/stdin','utf8');
+            console.log(JSON.parse(d).brokenLinks.length);
+          ")
+          SEO_ISSUES=$(echo "$SEO_REPORT" | node -e "
+            const d=require('fs').readFileSync('/dev/stdin','utf8');
+            console.log(JSON.parse(d).pagesWithIssues);
+          ")
+          SITEMAP=$(echo "$SEO_REPORT" | node -e "
+            const d=require('fs').readFileSync('/dev/stdin','utf8');
+            console.log(JSON.parse(d).sitemap);
+          ")
+
+          echo "Broken links: $BROKEN_COUNT"
+          echo "SEO issues: $SEO_ISSUES"
+          echo "Sitemap: $SITEMAP"
+
+          # Only create issue if there are problems
+          if [ "$BROKEN_COUNT" -gt "0" ] || [ "$SEO_ISSUES" -gt "0" ] || [ "$SITEMAP" = "MISSING" ]; then
+
+            BROKEN_LIST=$(echo "$LINK_REPORT" | node -e "
+              const d=require('fs').readFileSync('/dev/stdin','utf8');
+              const r=JSON.parse(d);
+              if(r.brokenLinks.length===0){console.log('None');}
+              else{console.log(r.brokenLinks.map(l=>'- \`'+l+'\`').join('\n'));}
+            ")
+
+            SEO_LIST=$(echo "$SEO_REPORT" | node -e "
+              const d=require('fs').readFileSync('/dev/stdin','utf8');
+              const r=JSON.parse(d);
+              if(r.issues.length===0){console.log('None');}
+              else{console.log(r.issues.map(i=>i.page+': '+i.issues.join(', ')).join('\n'));}
+            ")
+
+            # Check if open content-health issue already exists
+            EXISTING=$(gh issue list \
+              --repo ${{ github.repository }} \
+              --label "content-health" \
+              --state open \
+              --json number \
+              --jq '.[0].number' 2>/dev/null || echo "")
+
+            BODY="Weekly content health check found issues.
+
+          ## 🔗 Broken Internal Links ($BROKEN_COUNT)
+          $BROKEN_LIST
+
+          ## 🔍 SEO Issues ($SEO_ISSUES pages)
+          $SEO_LIST
+
+          ## 🗺️ Sitemap
+          Status: **$SITEMAP**
+
+          ---
+          _Generated by Content Health Check — $(date -u +%Y-%m-%d)_"
+
+            if [ -z "$EXISTING" ]; then
+              gh label create "content-health" --color "0075ca" --description "Content audit issues" \
+                --repo ${{ github.repository }} 2>/dev/null || true
+
+              gh issue create \
+                --repo ${{ github.repository }} \
+                --title "🔍 Content Health Report — $(date -u +%Y-%m-%d)" \
+                --label "content-health,bug" \
+                --body "$BODY"
+              echo "✅ Created new content health issue"
+            else
+              gh issue comment $EXISTING \
+                --repo ${{ github.repository }} \
+                --body "**Weekly update ($(date -u +%Y-%m-%d)):**
+
+          $BODY"
+              echo "✅ Updated existing issue #$EXISTING"
+            fi
+
+          else
+            echo "✅ No content health issues found — site is clean"
+          fi

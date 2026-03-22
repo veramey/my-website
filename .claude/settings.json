@@ -5,6 +5,8 @@
   "skills": [
     ".claude/skills/pipeline-status.md",
     ".claude/skills/trigger-issue.md",
-    ".claude/skills/check-live.md"
+    ".claude/skills/check-live.md",
+    ".claude/skills/new-article.md",
+    ".claude/skills/seo-check.md"
   ]
 }
