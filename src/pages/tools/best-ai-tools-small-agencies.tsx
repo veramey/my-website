@@ -20,6 +20,7 @@ export default function BestAiToolsSmallAgencies() {
           content="A practical roundup of the best AI tools for small agencies — covering client onboarding, meeting assistants, SOPs, proposals, and workflow automation."
         />
         <meta property="og:url" content={CANONICAL_URL} />
+        <link rel="canonical" href={CANONICAL_URL} />
       </Head>
 
       <Nav />
