@@ -68,6 +68,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="AI Ops for Small Agencies" />
         <meta property="og:description" content="Practical AI operations systems for small agencies. No hype — only actionable workflows, tools, and templates." />
+        <meta property="og:url" content="https://www.aiopagency.com/" />
+        <link rel="canonical" href="https://www.aiopagency.com/" />
       </Head>
 
       <Nav />
