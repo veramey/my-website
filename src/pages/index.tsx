@@ -27,12 +27,12 @@ const startHereCards = [
   {
     number: '01',
     title: 'Browse all AI tool recommendations',
-    href: '/tools',
+    href: '/tools/best-ai-tools-small-agencies',
   },
   {
     number: '02',
     title: 'Explore all implementation guides',
-    href: '/guides',
+    href: '/guides/automate-client-onboarding-small-agency',
   },
   {
     number: '03',
