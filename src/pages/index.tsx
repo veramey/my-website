@@ -26,17 +26,17 @@ const featuredContent = [
 const startHereCards = [
   {
     number: '01',
-    title: 'Browse all AI tool recommendations',
-    href: '/tools/best-ai-tools-small-agencies',
+    title: 'Start Here — find your path',
+    href: '/start-here',
   },
   {
     number: '02',
-    title: 'Explore all implementation guides',
-    href: '/guides/automate-client-onboarding-small-agency',
+    title: 'Browse all guides',
+    href: '/guides',
   },
   {
     number: '03',
-    title: 'AI Ops Starter Kit',
+    title: 'Download AI Ops Starter Kit',
     href: '/templates/client-onboarding-ai-checklist',
   },
 ]
