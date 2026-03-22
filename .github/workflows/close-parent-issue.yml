@@ -5,6 +5,7 @@ on:
     types: [closed]
 
 permissions:
+  contents: read
   issues: write
 
 jobs:
@@ -21,23 +22,33 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Find and close parent if all sub-issues done
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Check if all sub-issues are closed
+        id: check
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           BODY="${{ github.event.issue.body }}"
-
-          # Extract parent issue number from body: "Parent: #N"
           PARENT_NUM=$(echo "$BODY" | grep -oP 'Parent:\s*#\K[0-9]+' | head -1)
 
           if [ -z "$PARENT_NUM" ]; then
-            echo "No parent issue found in body — skipping"
+            echo "No parent issue found — skipping"
+            echo "proceed=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          echo "Parent issue: #$PARENT_NUM"
+          PARENT_STATE=$(gh issue view $PARENT_NUM \
+            --repo ${{ github.repository }} \
+            --json state --jq '.state')
 
-          # Get all open sub-issues that reference this parent
+          if [ "$PARENT_STATE" != "OPEN" ]; then
+            echo "Parent #$PARENT_NUM already $PARENT_STATE — skipping"
+            echo "proceed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           OPEN_SUBS=$(gh issue list \
             --repo ${{ github.repository }} \
             --label "sub-issue" \
@@ -49,36 +60,108 @@ jobs:
           echo "Open sub-issues remaining: $OPEN_SUBS"
 
           if [ "$OPEN_SUBS" != "0" ]; then
-            echo "Still $OPEN_SUBS open sub-issue(s) — not closing parent yet"
+            echo "Still $OPEN_SUBS open — not ready"
+            echo "proceed=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-
-          # Check parent is still open
-          PARENT_STATE=$(gh issue view $PARENT_NUM \
-            --repo ${{ github.repository }} \
-            --json state --jq '.state')
-
-          if [ "$PARENT_STATE" != "OPEN" ]; then
-            echo "Parent #$PARENT_NUM is already $PARENT_STATE — skipping"
-            exit 0
-          fi
-
-          echo "All sub-issues closed — closing parent #$PARENT_NUM"
-
-          gh issue comment $PARENT_NUM \
-            --repo ${{ github.repository }} \
-            --body "✅ All sub-issues completed. Closing automatically.
-
-          _Closed by Close Parent Issue workflow_"
-
-          gh issue close $PARENT_NUM \
-            --repo ${{ github.repository }} \
-            --reason completed
 
           echo "PARENT_NUM=$PARENT_NUM" >> $GITHUB_ENV
+          echo "proceed=true" >> $GITHUB_OUTPUT
 
-      - name: Move parent issue to Done on project board
-        if: env.PARENT_NUM != ''
+      - name: Collect verification context
+        if: steps.check.outputs.proceed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          mkdir -p input
+
+          echo "## Parent Issue" > input/verify_context.md
+          gh issue view $PARENT_NUM \
+            --repo ${{ github.repository }} \
+            >> input/verify_context.md
+
+          echo "" >> input/verify_context.md
+          echo "## Closed Sub-Issues" >> input/verify_context.md
+          gh issue list \
+            --repo ${{ github.repository }} \
+            --label "sub-issue" \
+            --state closed \
+            --limit 100 \
+            --json number,title,body \
+            --jq ".[] | select(.body | test(\"Parent:\\\\s*#${PARENT_NUM}\")) | \"### #\\(.number): \\(.title)\\n\\(.body)\"" \
+            >> input/verify_context.md
+
+          echo "" >> input/verify_context.md
+          echo "## Recent merged PRs (git log)" >> input/verify_context.md
+          git log --oneline -20 >> input/verify_context.md
+
+          echo "" >> input/verify_context.md
+          echo "## Git diff of relevant files (last 5 merges)" >> input/verify_context.md
+          git diff HEAD~5 HEAD -- src/ >> input/verify_context.md 2>/dev/null || true
+
+          echo "Context ready:"
+          wc -l input/verify_context.md
+
+      - name: Run Claude — verify acceptance criteria
+        if: steps.check.outputs.proceed == 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          claude --dangerously-skip-permissions -p "
+          You are a QA Agent verifying whether a parent GitHub issue can be marked Done.
+
+          Read input/verify_context.md — it contains:
+          - The parent issue with its goal and acceptance criteria
+          - All closed sub-issues and what they implemented
+          - Recent git log and diff of src/ files
+
+          ## Your job
+          Check whether the acceptance criteria in the parent issue are actually satisfied
+          by what was implemented in the sub-issues and visible in the git diff.
+
+          ## Decision rules
+
+          CLOSE THE PARENT if:
+          - Every acceptance criterion in the parent issue is covered by at least one sub-issue
+          - The relevant code changes are visible in the git diff
+          - No criterion is obviously missing or only partially addressed
+
+          DO NOT CLOSE if:
+          - One or more acceptance criteria have no corresponding implementation
+          - The git diff shows the code is incomplete or broken
+          - A sub-issue was closed but its implementation doesn't match what was required
+
+          ## Actions
+
+          If all criteria are met — close the parent and move to Done:
+          gh issue comment \$PARENT_NUM --repo \$REPO --body \"✅ **QA verification passed** — all acceptance criteria satisfied.
+
+          [brief summary of what was verified]
+
+          _Verified by Close Parent Agent_\"
+          gh issue close \$PARENT_NUM --repo \$REPO --reason completed
+          echo 'CLOSE_RESULT=done' >> \$GITHUB_ENV
+
+          If criteria are NOT met — comment with details and do NOT close:
+          gh issue comment \$PARENT_NUM --repo \$REPO --body \"⚠️ **QA verification failed** — parent issue not closed.
+
+          ## What's missing
+          [specific list of unmet criteria]
+
+          ## What was implemented
+          [brief summary of what sub-issues did cover]
+
+          _QA by Close Parent Agent_\"
+          echo 'CLOSE_RESULT=blocked' >> \$GITHUB_ENV
+
+          Use PARENT_NUM=$PARENT_NUM as the issue number.
+          Start by reading input/verify_context.md carefully.
+          "
+
+      - name: Move to Done on project board
+        if: steps.check.outputs.proceed == 'true' && env.CLOSE_RESULT == 'done'
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
