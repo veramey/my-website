@@ -21,7 +21,7 @@ jobs:
       - name: Job Info
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🔍 Pipeline Monitor Started"
+          echo "🤖 Pipeline Monitor Agent Started"
           echo "⏰ $(date -u)"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -30,109 +30,122 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
 
-      # ── 1. Re-trigger stuck PR Rework ────────────────────────────────────────
-      - name: Re-trigger stuck needs-rework PRs
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Collect pipeline context
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          echo "Checking for PRs stuck with needs-rework..."
+          mkdir -p input
 
-          STUCK_PRS=$(gh pr list \
+          echo "## Open Issues" > input/pipeline_context.md
+          gh issue list \
             --repo ${{ github.repository }} \
             --state open \
-            --label "needs-rework" \
-            --json number,updatedAt \
+            --json number,title,labels,updatedAt,comments \
+            --jq '.[] | "Issue #\(.number): \(.title) | labels: \([.labels[].name] | join(", ")) | updated: \(.updatedAt)"' \
+            >> input/pipeline_context.md
+
+          echo "" >> input/pipeline_context.md
+          echo "## Open Pull Requests" >> input/pipeline_context.md
+          gh pr list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --json number,title,headRefName,labels,updatedAt \
+            --jq '.[] | "PR #\(.number): \(.title) | branch: \(.headRefName) | labels: \([.labels[].name] | join(", ")) | updated: \(.updatedAt)"' \
+            >> input/pipeline_context.md
+
+          echo "" >> input/pipeline_context.md
+          echo "## Recent Workflow Runs (last 30)" >> input/pipeline_context.md
+          gh run list \
+            --repo ${{ github.repository }} \
+            --limit 30 \
+            --json databaseId,displayTitle,workflowName,status,conclusion,headBranch,createdAt \
+            --jq '.[] | "[\(.workflowName)] \(.displayTitle) | branch: \(.headBranch) | \(.status) \(.conclusion) | \(.createdAt)"' \
+            >> input/pipeline_context.md
+
+          echo "" >> input/pipeline_context.md
+          echo "## PR Comments (stuck PRs)" >> input/pipeline_context.md
+          gh pr list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --json number,labels \
             --jq '.[] | select(
-              (now - (.updatedAt | fromdateiso8601)) > 1800
-            ) | .number')
-
-          if [ -z "$STUCK_PRS" ]; then
-            echo "✅ No stuck needs-rework PRs found"
-          else
-            for PR in $STUCK_PRS; do
-              echo "🔁 Re-triggering PR Rework for PR #$PR (stuck >30min)"
-              gh pr edit $PR --repo ${{ github.repository }} \
-                --remove-label "needs-rework" 2>/dev/null || true
-              sleep 3
-              gh pr edit $PR --repo ${{ github.repository }} \
-                --add-label "needs-rework" 2>/dev/null || true
-              echo "✅ Re-triggered PR #$PR"
+              (.labels | map(.name) | contains(["needs-rework"])) or
+              (.labels | map(.name) | contains(["blocked"]))
+            ) | .number' | while read PR_NUM; do
+              echo "### PR #$PR_NUM comments:" >> input/pipeline_context.md
+              gh pr view $PR_NUM \
+                --repo ${{ github.repository }} \
+                --json comments \
+                --jq '.comments[-3:] | .[] | "[\(.author.login)]: \(.body[:300])"' \
+                >> input/pipeline_context.md 2>/dev/null || true
             done
-          fi
 
-      # ── 2. Re-trigger PRs with pr_approved but no Unit Tests in last 30min ──
-      - name: Re-trigger stalled pr_approved PRs
+          echo "" >> input/pipeline_context.md
+          echo "## Current UTC time" >> input/pipeline_context.md
+          echo "$(date -u)" >> input/pipeline_context.md
+
+          echo "Context collected:"
+          cat input/pipeline_context.md
+
+      - name: Run Claude — analyze and act
         env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
-          echo "Checking for pr_approved PRs with no recent Unit Tests run..."
+          claude --dangerously-skip-permissions -p "
+          You are a Pipeline Monitor Agent for an autonomous development pipeline (dark factory) on GitHub.
 
-          APPROVED_PRS=$(gh pr list \
-            --repo ${{ github.repository }} \
-            --state open \
-            --label "pr_approved" \
-            --json number,headRefName,updatedAt \
-            --jq '.[] | select(
-              (now - (.updatedAt | fromdateiso8601)) > 1800
-            ) | "\(.number) \(.headRefName)"')
+          Read input/pipeline_context.md — it contains the current state of all issues, PRs, and workflow runs.
 
-          if [ -z "$APPROVED_PRS" ]; then
-            echo "✅ No stalled pr_approved PRs found"
-          else
-            echo "$APPROVED_PRS" | while read PR_NUM BRANCH; do
-              echo "⚠️ PR #$PR_NUM ($BRANCH) has pr_approved but seems stalled — re-labeling"
-              gh pr edit $PR_NUM --repo ${{ github.repository }} \
-                --remove-label "pr_approved" 2>/dev/null || true
-              sleep 3
-              gh pr edit $PR_NUM --repo ${{ github.repository }} \
-                --add-label "pr_approved" 2>/dev/null || true
-              echo "✅ Re-triggered Unit Tests for PR #$PR_NUM"
-            done
-          fi
+          Your job: analyze the pipeline, identify problems, and fix them using gh CLI commands.
 
-      # ── 3. Report blocked PRs ─────────────────────────────────────────────────
-      - name: Report blocked PRs
-        env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          BLOCKED=$(gh pr list \
-            --repo ${{ github.repository }} \
-            --state open \
-            --label "blocked" \
-            --json number,title,url \
-            --jq '.[] | "PR #\(.number): \(.title) → \(.url)"')
+          ## Pipeline rules (how this system works)
+          - Issues flow: opened → intake-done → refined → sub-issue+ready → tests-ready → AI Teammate → PR → Bug Check → pr_approved → Unit Tests → merged → Done
+          - PRs with 'needs-rework' trigger PR Rework agent automatically (via labeled event)
+          - PRs with 'pr_approved' trigger Unit Tests automatically (via labeled event)
+          - If a workflow failed due to rate limit, it needs to be manually re-triggered
 
-          if [ -z "$BLOCKED" ]; then
-            echo "✅ No blocked PRs"
-          else
-            echo "🚫 BLOCKED PRs (require human review):"
-            echo "$BLOCKED"
-          fi
+          ## How to identify problems
 
-      # ── 4. Summary ────────────────────────────────────────────────────────────
-      - name: Pipeline summary
-        env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          OPEN_ISSUES=$(gh issue list --repo ${{ github.repository }} --state open --json number --jq 'length')
-          OPEN_PRS=$(gh pr list --repo ${{ github.repository }} --state open --json number --jq 'length')
-          NEEDS_REWORK=$(gh pr list --repo ${{ github.repository }} --state open --label "needs-rework" --json number --jq 'length')
-          APPROVED=$(gh pr list --repo ${{ github.repository }} --state open --label "pr_approved" --json number --jq 'length')
-          BLOCKED=$(gh pr list --repo ${{ github.repository }} --state open --label "blocked" --json number --jq 'length')
+          STUCK needs-rework PR: has 'needs-rework' label AND last workflow run for that branch either failed or was >30 min ago with no success after
+          STUCK pr_approved PR: has 'pr_approved' label AND no Unit Tests success run in last 30 min
+          FAILED AI Teammate: workflow run shows 'failure' conclusion — check if it's rate limit or real error
+          BLOCKED PR: has 'blocked' label — requires human, just report it
+          STALLED ISSUE: issue has 'tests-ready' + 'sub-issue' labels but no AI Teammate run in last hour
 
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "📊 Pipeline Summary"
-          echo "   Open issues:      $OPEN_ISSUES"
-          echo "   Open PRs:         $OPEN_PRS"
-          echo "   needs-rework PRs: $NEEDS_REWORK"
-          echo "   pr_approved PRs:  $APPROVED"
-          echo "   blocked PRs:      $BLOCKED"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          ## Actions you can take
 
-          if [ "$BLOCKED" -gt "0" ]; then
-            echo "🔴 Pipeline has $BLOCKED blocked PR(s) — human review required"
-          elif [ "$NEEDS_REWORK" -gt "0" ]; then
-            echo "🟡 Pipeline has $NEEDS_REWORK PR(s) in rework — monitoring"
-          else
-            echo "🟢 Pipeline healthy"
-          fi
+          Re-trigger PR Rework (remove + re-add needs-rework label):
+          gh pr edit PR_NUMBER --repo \$REPO --remove-label 'needs-rework'
+          sleep 3
+          gh pr edit PR_NUMBER --repo \$REPO --add-label 'needs-rework'
+
+          Re-trigger Unit Tests (remove + re-add pr_approved label):
+          gh pr edit PR_NUMBER --repo \$REPO --remove-label 'pr_approved'
+          sleep 3
+          gh pr edit PR_NUMBER --repo \$REPO --add-label 'pr_approved'
+
+          Re-trigger AI Teammate for an issue:
+          gh workflow run ai-teammate.yml --repo \$REPO --field issue_number=ISSUE_NUMBER
+
+          Comment on a PR explaining what you did:
+          gh pr comment PR_NUMBER --repo \$REPO --body 'MESSAGE'
+
+          Comment on an issue:
+          gh issue comment ISSUE_NUMBER --repo \$REPO --body 'MESSAGE'
+
+          ## Rules
+          - Only act on things that are genuinely stuck (>30 min with no progress)
+          - Do NOT re-trigger things that are currently in_progress
+          - Do NOT re-trigger more than once per run
+          - For BLOCKED PRs: only comment, do not re-trigger
+          - Always comment on the PR/issue explaining what you did and why
+          - If everything looks healthy, output 'Pipeline is healthy — no action needed' and exit
+          - Be conservative: when in doubt, report but don't act
+
+          Start by reading input/pipeline_context.md, reasoning about each open PR and issue, then act.
+          "

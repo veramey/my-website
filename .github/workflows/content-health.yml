@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   issues: write
+  pull-requests: write
 
 jobs:
   content-health:
@@ -17,12 +18,14 @@ jobs:
       - name: Job Info
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🔍 Content Health Check Started"
+          echo "🤖 Content Health Agent Started"
           echo "⏰ $(date -u)"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -33,243 +36,128 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --progress=false
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
 
-      - name: Build site
-        run: npm run build
-
-      - name: Run internal link checker
-        id: links
+      - name: Configure Git Author
         run: |
-          mkdir -p output
+          git config --global user.name "AI Teammate"
+          git config --global user.email "agent.ai.native@gmail.com"
 
-          cat > output/check-links.js << 'EOF'
-          const fs = require('fs');
-          const path = require('path');
-
-          // Find all .tsx files in src/
-          function findFiles(dir, ext) {
-            let results = [];
-            const items = fs.readdirSync(dir);
-            for (const item of items) {
-              const full = path.join(dir, item);
-              if (fs.statSync(full).isDirectory()) {
-                results = results.concat(findFiles(full, ext));
-              } else if (item.endsWith(ext)) {
-                results.push(full);
-              }
-            }
-            return results;
-          }
-
-          // Extract all internal hrefs
-          const files = findFiles('src', '.tsx');
-          const hrefRegex = /href=["'](\\/[^"'?#]+)["']/g;
-          const allLinks = new Set();
-
-          for (const file of files) {
-            const content = fs.readFileSync(file, 'utf8');
-            let match;
-            while ((match = hrefRegex.exec(content)) !== null) {
-              allLinks.add(match[1]);
-            }
-          }
-
-          // Find all existing pages
-          function getExistingPages(dir) {
-            const pages = new Set(['/']);
-            function walk(d, prefix) {
-              const items = fs.readdirSync(d);
-              for (const item of items) {
-                const full = path.join(d, item);
-                if (fs.statSync(full).isDirectory()) {
-                  walk(full, prefix + '/' + item);
-                } else if (item.endsWith('.tsx') && item !== '_app.tsx' && item !== '_document.tsx') {
-                  const pagePath = prefix + '/' + item.replace(/\.tsx$/, '').replace(/\/index$/, '');
-                  pages.add(pagePath === '' ? '/' : pagePath);
-                }
-              }
-            }
-            walk(dir, '');
-            return pages;
-          }
-
-          const existingPages = getExistingPages('src/pages');
-
-          // Check for broken links
-          const broken = [];
-          for (const link of allLinks) {
-            // Skip external links, anchors, and dynamic routes
-            if (link.startsWith('http') || link.includes('#') || link.includes('[')) continue;
-            // Normalize trailing slash
-            const normalized = link.replace(/\/$/, '') || '/';
-            if (!existingPages.has(normalized) && !existingPages.has(normalized + '/index')) {
-              broken.push(link);
-            }
-          }
-
-          const report = {
-            totalLinks: allLinks.size,
-            totalPages: existingPages.size,
-            brokenLinks: broken,
-            existingPages: [...existingPages].sort()
-          };
-
-          fs.writeFileSync('output/link-report.json', JSON.stringify(report, null, 2));
-          console.log(JSON.stringify(report, null, 2));
-          EOF
-
-          node output/check-links.js
-
-      - name: Check missing SEO meta tags
-        id: seo
-        run: |
-          cat > output/check-seo.js << 'EOF'
-          const fs = require('fs');
-          const path = require('path');
-
-          function findFiles(dir, ext) {
-            let results = [];
-            try {
-              const items = fs.readdirSync(dir);
-              for (const item of items) {
-                const full = path.join(dir, item);
-                if (fs.statSync(full).isDirectory()) {
-                  results = results.concat(findFiles(full, ext));
-                } else if (item.endsWith(ext)) {
-                  results.push(full);
-                }
-              }
-            } catch(e) {}
-            return results;
-          }
-
-          const ignore = ['_app.tsx', '_document.tsx', '404.tsx'];
-          const files = findFiles('src/pages', '.tsx')
-            .filter(f => !ignore.some(i => f.endsWith(i)));
-
-          const issues = [];
-
-          for (const file of files) {
-            const content = fs.readFileSync(file, 'utf8');
-            const pageName = file.replace('src/pages/', '');
-            const pageIssues = [];
-
-            if (!content.includes('<title>') && !content.includes('og:title')) {
-              pageIssues.push('missing <title>');
-            }
-            if (!content.includes('name="description"') && !content.includes('og:description')) {
-              pageIssues.push('missing meta description');
-            }
-            if (!content.includes('og:url') && !content.includes('canonical')) {
-              pageIssues.push('missing canonical/og:url');
-            }
-
-            if (pageIssues.length > 0) {
-              issues.push({ page: pageName, issues: pageIssues });
-            }
-          }
-
-          const hasSitemap = fs.existsSync('public/sitemap.xml');
-          const hasRobots = fs.existsSync('public/robots.txt');
-
-          const report = {
-            pagesChecked: files.length,
-            pagesWithIssues: issues.length,
-            issues,
-            sitemap: hasSitemap ? 'present' : 'MISSING',
-            robots: hasRobots ? 'present' : 'MISSING'
-          };
-
-          fs.writeFileSync('output/seo-report.json', JSON.stringify(report, null, 2));
-          console.log(JSON.stringify(report, null, 2));
-          EOF
-
-          node output/check-seo.js
-
-      - name: Generate report and create issue if needed
+      - name: Collect content context
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          LINK_REPORT=$(cat output/link-report.json)
-          SEO_REPORT=$(cat output/seo-report.json)
+          mkdir -p input
 
-          BROKEN_COUNT=$(echo "$LINK_REPORT" | node -e "
-            const d=require('fs').readFileSync('/dev/stdin','utf8');
-            console.log(JSON.parse(d).brokenLinks.length);
-          ")
-          SEO_ISSUES=$(echo "$SEO_REPORT" | node -e "
-            const d=require('fs').readFileSync('/dev/stdin','utf8');
-            console.log(JSON.parse(d).pagesWithIssues);
-          ")
-          SITEMAP=$(echo "$SEO_REPORT" | node -e "
-            const d=require('fs').readFileSync('/dev/stdin','utf8');
-            console.log(JSON.parse(d).sitemap);
-          ")
+          # --- 1. All internal hrefs found in source ---
+          echo "## Internal Links Found in Source Code" > input/content_context.md
+          grep -rh 'href="/' src/ --include="*.tsx" \
+            | grep -oP 'href="\K[^"]+' \
+            | sort -u \
+            >> input/content_context.md 2>/dev/null || true
 
-          echo "Broken links: $BROKEN_COUNT"
-          echo "SEO issues: $SEO_ISSUES"
-          echo "Sitemap: $SITEMAP"
+          # --- 2. All existing pages ---
+          echo "" >> input/content_context.md
+          echo "## Existing Pages (src/pages/)" >> input/content_context.md
+          find src/pages -name "*.tsx" \
+            | sed 's|src/pages||;s|\.tsx$||;s|/index$||' \
+            | sort \
+            >> input/content_context.md
 
-          # Only create issue if there are problems
-          if [ "$BROKEN_COUNT" -gt "0" ] || [ "$SEO_ISSUES" -gt "0" ] || [ "$SITEMAP" = "MISSING" ]; then
+          # --- 3. SEO check per page ---
+          echo "" >> input/content_context.md
+          echo "## SEO Status Per Page" >> input/content_context.md
+          for f in $(find src/pages -name "*.tsx" | grep -v "_app\|_document\|404"); do
+            PAGE=$(echo $f | sed 's|src/pages||;s|\.tsx$||')
+            HAS_TITLE=$(grep -c "<title>\|og:title" $f 2>/dev/null || echo 0)
+            HAS_DESC=$(grep -c 'name="description"\|og:description' $f 2>/dev/null || echo 0)
+            HAS_CANONICAL=$(grep -c 'canonical\|og:url' $f 2>/dev/null || echo 0)
+            echo "Page $PAGE — title:$HAS_TITLE desc:$HAS_DESC canonical:$HAS_CANONICAL" >> input/content_context.md
+          done
 
-            BROKEN_LIST=$(echo "$LINK_REPORT" | node -e "
-              const d=require('fs').readFileSync('/dev/stdin','utf8');
-              const r=JSON.parse(d);
-              if(r.brokenLinks.length===0){console.log('None');}
-              else{console.log(r.brokenLinks.map(l=>'- \`'+l+'\`').join('\n'));}
-            ")
+          # --- 4. Check sitemap and robots ---
+          echo "" >> input/content_context.md
+          echo "## Static Files in public/" >> input/content_context.md
+          ls public/ >> input/content_context.md 2>/dev/null || echo "public/ empty or missing" >> input/content_context.md
 
-            SEO_LIST=$(echo "$SEO_REPORT" | node -e "
-              const d=require('fs').readFileSync('/dev/stdin','utf8');
-              const r=JSON.parse(d);
-              if(r.issues.length===0){console.log('None');}
-              else{console.log(r.issues.map(i=>i.page+': '+i.issues.join(', ')).join('\n'));}
-            ")
+          # --- 5. Open content-related issues (avoid duplicates) ---
+          echo "" >> input/content_context.md
+          echo "## Already Open Issues (to avoid duplicates)" >> input/content_context.md
+          gh issue list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --json number,title \
+            --jq '.[] | "#\(.number): \(.title)"' \
+            >> input/content_context.md 2>/dev/null || true
 
-            # Check if open content-health issue already exists
-            EXISTING=$(gh issue list \
-              --repo ${{ github.repository }} \
-              --label "content-health" \
-              --state open \
-              --json number \
-              --jq '.[0].number' 2>/dev/null || echo "")
+          # --- 6. PRD summary ---
+          echo "" >> input/content_context.md
+          echo "## PRD.md (product requirements)" >> input/content_context.md
+          cat PRD.md >> input/content_context.md
 
-            BODY="Weekly content health check found issues.
+          echo "Context collected:"
+          wc -l input/content_context.md
 
-          ## 🔗 Broken Internal Links ($BROKEN_COUNT)
-          $BROKEN_LIST
+      - name: Run Claude — audit and act
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          claude --dangerously-skip-permissions -p "
+          You are a Content Health Agent for an AI Ops content site (my-website).
 
-          ## 🔍 SEO Issues ($SEO_ISSUES pages)
-          $SEO_LIST
+          Read input/content_context.md — it contains:
+          - All internal hrefs found in source code
+          - All existing pages in src/pages/
+          - SEO status per page (title/description/canonical counts)
+          - What files exist in public/ (sitemap, robots, etc.)
+          - Already open GitHub issues (to avoid creating duplicates)
+          - The full PRD.md
 
-          ## 🗺️ Sitemap
-          Status: **$SITEMAP**
+          Your job: audit the site's content health and take the RIGHT action for each problem.
 
-          ---
-          _Generated by Content Health Check — $(date -u +%Y-%m-%d)_"
+          ## Decision rules for each problem type
 
-            if [ -z "$EXISTING" ]; then
-              gh label create "content-health" --color "0075ca" --description "Content audit issues" \
-                --repo ${{ github.repository }} 2>/dev/null || true
+          BROKEN INTERNAL LINK (href exists in code but page doesn't exist in src/pages/):
+            - Check PRD.md: is this page planned for Phase 2 or Phase 3?
+              → YES: create a GitHub issue to implement it (don't create if similar issue already open)
+              → NO: it might be a typo — fix the href directly with a code edit and open a PR
+              → Template/download pages: create issue titled like 'Build /templates/[slug] page'
 
-              gh issue create \
-                --repo ${{ github.repository }} \
-                --title "🔍 Content Health Report — $(date -u +%Y-%m-%d)" \
-                --label "content-health,bug" \
-                --body "$BODY"
-              echo "✅ Created new content health issue"
-            else
-              gh issue comment $EXISTING \
-                --repo ${{ github.repository }} \
-                --body "**Weekly update ($(date -u +%Y-%m-%d)):**
+          MISSING SEO META (title:0 or desc:0 on an existing page):
+            - This is a quick code fix — edit the .tsx file directly, add the missing tags, open a PR
+            - Use the page URL and PRD context to write good title/description values
 
-          $BODY"
-              echo "✅ Updated existing issue #$EXISTING"
-            fi
+          MISSING SITEMAP (sitemap.xml not in public/):
+            - Create a GitHub issue: 'Add sitemap.xml and robots.txt for SEO'
+            - Don't create if a similar issue is already open
 
-          else
-            echo "✅ No content health issues found — site is clean"
-          fi
+          MISSING ROBOTS.TXT (robots.txt not in public/):
+            - Same as sitemap — single issue for both
+
+          ## How to create a GitHub issue
+          gh issue create \
+            --repo \$REPO \
+            --title 'TITLE' \
+            --label 'content-health' \
+            --body 'BODY'
+
+          ## How to open a PR for a direct code fix
+          1. Create a new branch: git checkout -b fix/content-health-DESCRIPTION
+          2. Edit the relevant .tsx file(s)
+          3. git add -A && git commit -m 'fix: DESCRIPTION'
+          4. git push origin BRANCH_NAME
+          5. gh pr create --repo \$REPO --title 'fix: DESCRIPTION' --body 'BODY' --base main --head BRANCH_NAME
+
+          ## Rules
+          - Check 'Already Open Issues' before creating any issue — avoid exact duplicates
+          - Prefer direct PR fixes for small code changes (missing meta tags, typos)
+          - Prefer GitHub issues for missing pages that need full implementation
+          - For each action you take, explain your reasoning briefly
+          - Create the 'content-health' label if needed: gh label create 'content-health' --color '0075ca' --repo \$REPO 2>/dev/null || true
+          - If everything is clean, output a short summary and exit
+
+          Start by reading input/content_context.md carefully, then reason through each finding and act.
+          "
