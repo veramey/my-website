@@ -1,3 +1,4 @@
+import React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
@@ -59,7 +60,34 @@ const pillars = [
   },
 ]
 
+const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
+const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
+
 export default function Home() {
+  const [email, setEmail] = React.useState('')
+  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus('loading')
+    try {
+      const text = `📧 New newsletter subscriber:\n${email}`
+      const res = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text }),
+        }
+      )
+      if (!res.ok) throw new Error('Failed')
+      setStatus('success')
+      setEmail('')
+    } catch {
+      setStatus('error')
+    }
+  }
+
   return (
     <>
       <Head>
@@ -207,20 +235,31 @@ export default function Home() {
             <div className="max-w-md mx-auto text-center">
               <h2 className="text-xl font-bold text-gray-900">Get weekly practical AI systems for small agencies</h2>
               <p className="mt-2 text-sm text-gray-500">One workflow, one tool, one template — every week. No hype.</p>
-              <form className="mt-6 flex gap-2" onSubmit={(e) => e.preventDefault()}>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors whitespace-nowrap"
-                >
-                  Subscribe
-                </button>
-              </form>
+              {status === 'success' ? (
+                <p className="mt-6 text-sm text-green-600 font-medium">✓ You&apos;re subscribed. Talk soon.</p>
+              ) : (
+                <form className="mt-6 flex gap-2" onSubmit={handleSubscribe}>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
+                    required
+                    disabled={status === 'loading'}
+                  />
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors whitespace-nowrap disabled:opacity-50"
+                  >
+                    {status === 'loading' ? 'Sending…' : 'Subscribe'}
+                  </button>
+                </form>
+              )}
+              {status === 'error' && (
+                <p className="mt-2 text-xs text-red-500">Something went wrong — try again.</p>
+              )}
             </div>
           </div>
         </section>
