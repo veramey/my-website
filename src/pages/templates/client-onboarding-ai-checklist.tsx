@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
 import Nav from '@/components/Nav'
 
 const whatIsInside = [
@@ -18,6 +19,14 @@ const howToUseSteps = [
 ]
 
 export default function ClientOnboardingAiChecklist() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'success'>('idle')
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setStatus('success')
+  }
+
   return (
     <>
       <Head>
@@ -26,6 +35,7 @@ export default function ClientOnboardingAiChecklist() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="AI Ops Starter Kit for Small Agencies — Free Template" />
         <meta property="og:description" content="Free download: AI Ops Starter Kit for small agencies. 10 workflow templates, starter tool stack, onboarding checklist, and SOP prompt pack." />
+        <link rel="canonical" href="https://aiopsagency.com/templates/client-onboarding-ai-checklist" />
       </Head>
 
       <Nav />
@@ -109,7 +119,7 @@ export default function ClientOnboardingAiChecklist() {
         {/* Section 6 — Download CTA */}
         <section className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-20">
-            <div className="max-w-xl">
+            <div className="max-w-md">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Free Download</p>
               <h2 className="text-3xl font-bold text-gray-900 leading-tight tracking-tight">
                 Get the AI Ops Starter Kit
@@ -117,27 +127,36 @@ export default function ClientOnboardingAiChecklist() {
               <p className="mt-4 text-base text-gray-600 leading-relaxed">
                 10 workflow templates, starter tool stack, onboarding checklist, and SOP prompt pack — free for small agencies.
               </p>
-              <div className="mt-8 p-6 bg-white border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-500">Download coming soon. In the meantime, explore related resources:</p>
-                <ul className="mt-4 flex flex-col gap-3">
-                  <li>
-                    <Link
-                      href="/guides/automate-client-onboarding-small-agency"
-                      className="text-sm font-medium text-gray-800 hover:text-gray-500 transition-colors"
-                    >
-                      How to automate client onboarding →
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/tools/best-ai-tools-small-agencies"
-                      className="text-sm font-medium text-gray-800 hover:text-gray-500 transition-colors"
-                    >
-                      Best AI tools for small agencies →
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+
+              {status === 'success' ? (
+                <div className="mt-8 p-5 bg-white border border-gray-200 rounded-lg">
+                  <p className="text-sm font-semibold text-gray-900">Thank you!</p>
+                  <p className="mt-1 text-sm text-gray-500">Your download is on its way. Check your inbox.</p>
+                </div>
+              ) : (
+                <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit}>
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="download-email" className="text-sm font-medium text-gray-700">
+                      Email address
+                    </label>
+                    <input
+                      id="download-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      required
+                      className="px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start"
+                  >
+                    Download free
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </section>
