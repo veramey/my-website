@@ -72,13 +72,10 @@ export default function Home() {
     setStatus('loading')
     try {
       const text = `📧 New newsletter subscriber:\n${email}`
+      const params = new URLSearchParams({ chat_id: TELEGRAM_CHAT_ID!, text })
       const res = await fetch(
         `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text }),
-        }
+        { method: 'POST', body: params }
       )
       if (!res.ok) {
         const err = await res.json()
