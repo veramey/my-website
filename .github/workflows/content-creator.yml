@@ -1,0 +1,161 @@
+name: Content Creator
+
+run-name: "Content Creator : writing article for issue #${{ github.event.issue.number }}"
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  create-content:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.label.name == 'content-ready' &&
+      contains(github.event.issue.labels.*.name, 'sub-issue')
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✍️  Content Creator Agent Started"
+          echo "📋 Issue: #${{ github.event.issue.number }} — ${{ github.event.issue.title }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --progress=false
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Content Creator"
+          git config --global user.email "agent.ai.native@gmail.com"
+
+      - name: Collect context
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          mkdir -p input
+
+          echo "## Issue to implement" > input/content_brief.md
+          gh issue view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            >> input/content_brief.md
+
+          echo "" >> input/content_brief.md
+          echo "## PRD.md" >> input/content_brief.md
+          cat PRD.md >> input/content_brief.md
+
+          echo "" >> input/content_brief.md
+          echo "## Example article structure (guides)" >> input/content_brief.md
+          cat src/pages/guides/automate-client-onboarding-small-agency.tsx >> input/content_brief.md
+
+          echo "" >> input/content_brief.md
+          echo "## Example tools page structure" >> input/content_brief.md
+          cat src/pages/tools/best-ai-tools-small-agencies.tsx >> input/content_brief.md
+
+          echo "Context collected:"
+          wc -l input/content_brief.md
+
+      - name: Run Claude Opus — write article
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          BRANCH="content/issue-${ISSUE_NUMBER}"
+          git checkout -b "$BRANCH"
+
+          claude --dangerously-skip-permissions \
+            --model claude-opus-4-6 \
+            -p "
+          You are a Content Creator Agent for an AI Ops site targeting small agencies (2–10 people).
+
+          Read input/content_brief.md — it contains:
+          - The GitHub issue describing what article to write
+          - The full PRD.md for site context
+          - Two real example pages showing the exact code structure to follow
+
+          ## Your job
+          Write a complete, publication-ready Next.js page (.tsx file) for the article described in the issue.
+
+          ## Content quality rules
+          - Voice: direct, practical, no-hype. Like advice from a senior ops consultant, not a marketing blog.
+          - Every claim must be specific and actionable. No vague statements like 'AI can help you'.
+          - Use real tool names with honest assessments. No affiliate padding.
+          - Each section should teach something concrete a reader can implement today.
+          - Length: substantial. Guides should have 5–8 sections. Tools roundups should cover 4–6 categories.
+          - No filler intros. Open with the problem or the value, immediately.
+
+          ## Technical rules
+          - Follow the EXACT same code structure as the example pages in input/content_brief.md
+          - CANONICAL_URL constant at the top: use 'https://www.aiopagency.com' + the article path
+          - Full SEO Head: title, description (under 160 chars), og:title, og:description, og:url, canonical
+          - Import Head, Link, Nav from the same paths as examples
+          - Use max-w-3xl mx-auto px-6 py-20 wrapper with <article> inside
+          - Sections separated with border-t border-gray-100 pt-8 mt-10
+          - Tool lists use <aside> with bg-gray-50 border border-gray-100 rounded-lg p-5
+
+          ## File path
+          Determine the correct file path from the issue URL field:
+          - /guides/[slug] → src/pages/guides/[slug].tsx
+          - /tools/[slug] → src/pages/tools/[slug].tsx
+          - /templates/[slug] → src/pages/templates/[slug].tsx
+
+          ## Steps to complete
+          1. Read input/content_brief.md
+          2. Determine the file path from the issue URL
+          3. Write the complete .tsx file with full article content
+          4. Stage, commit, and push:
+             git add <file>
+             git commit -m 'content: write article for issue #${ISSUE_NUMBER}'
+             git push origin $BRANCH
+          5. Open PR:
+             gh pr create \
+               --repo \$REPO \
+               --title 'content: issue #${ISSUE_NUMBER}' \
+               --body 'Article written by Content Creator Agent using claude-opus-4-6.
+
+          Closes #${ISSUE_NUMBER}
+
+          _Generated by Content Creator_' \
+               --base main \
+               --head $BRANCH
+          "
+
+      - name: Comment on issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          PR_URL=$(gh pr list --repo ${{ github.repository }} \
+            --head "content/issue-${{ github.event.issue.number }}" \
+            --json url --jq '.[0].url' 2>/dev/null || echo "")
+
+          if [ -n "$PR_URL" ]; then
+            gh issue comment ${{ github.event.issue.number }} \
+              --repo ${{ github.repository }} \
+              --body "✍️ **Content Creator complete** — article written with claude-opus-4-6.
+
+          PR ready for review: $PR_URL
+
+          _Content Creator Agent_"
+          fi
