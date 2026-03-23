@@ -39,8 +39,72 @@ export default function BestAiToolsSmallAgencies() {
             </p>
           </header>
 
+          {/* Quick Comparison Table */}
+          <div className="mt-10">
+            <h2 className="text-xl font-semibold text-gray-900">At a glance</h2>
+            <div className="overflow-x-auto mt-6">
+              <table className="w-full border-collapse">
+                <caption className="sr-only">AI tools comparison by category</caption>
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="text-left text-sm font-semibold text-gray-900 pb-3 pr-6">Category</th>
+                    <th className="text-left text-sm font-semibold text-gray-900 pb-3 pr-6">Best pick</th>
+                    <th className="text-left text-sm font-semibold text-gray-900 pb-3">Why</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Meeting Assistants</td>
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Fathom</td>
+                    <td className="text-gray-600 text-sm py-3 align-top">
+                      <span>Free tier is genuinely useful — summaries with no setup overhead.</span>
+                      <br />
+                      <a href="#meeting-assistants" className="text-blue-600 hover:text-blue-700 underline text-sm">Jump to full notes</a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Writing &amp; Drafting</td>
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Claude</td>
+                    <td className="text-gray-600 text-sm py-3 align-top">
+                      <span>Best for long-form drafting, structured outputs, and complex instructions.</span>
+                      <br />
+                      <a href="#writing-drafting" className="text-blue-600 hover:text-blue-700 underline text-sm">Jump to full notes</a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Client Onboarding</td>
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Tally + Make</td>
+                    <td className="text-gray-600 text-sm py-3 align-top">
+                      <span>Clean intake forms connected to flexible automation — setup once, runs on autopilot.</span>
+                      <br />
+                      <a href="#client-onboarding" className="text-blue-600 hover:text-blue-700 underline text-sm">Jump to full notes</a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">SOPs &amp; Docs</td>
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Notion + Claude</td>
+                    <td className="text-gray-600 text-sm py-3 align-top">
+                      <span>Best workspace for storing SOPs, paired with AI drafting to cut writing time by 80%.</span>
+                      <br />
+                      <a href="#sops-docs" className="text-blue-600 hover:text-blue-700 underline text-sm">Jump to full notes</a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Workflow Automation</td>
+                    <td className="text-gray-600 text-sm py-3 pr-6 align-top">Make</td>
+                    <td className="text-gray-600 text-sm py-3 align-top">
+                      <span>Most flexible for complex multi-step flows — full control without the cost.</span>
+                      <br />
+                      <a href="#workflow-automation" className="text-blue-600 hover:text-blue-700 underline text-sm">Jump to full notes</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           {/* Meeting Assistants */}
-          <section className="border-t border-gray-100 pt-8 mt-10">
+          <section id="meeting-assistants" className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Meeting Assistants</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
               Agencies run on calls. Discovery calls, kickoffs, status updates, retrospectives — most teams are spending 10+ hours a week in meetings and then spending another hour manually processing each one. AI meeting assistants cut that second hour down to minutes.
@@ -60,7 +124,7 @@ export default function BestAiToolsSmallAgencies() {
           </section>
 
           {/* Writing and Drafting */}
-          <section className="border-t border-gray-100 pt-8 mt-10">
+          <section id="writing-drafting" className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Writing and Drafting</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
               The highest-leverage use of AI for most small agencies is drafting: proposals, client emails, briefs, follow-ups, SOPs, and status updates. The tools that work here are general-purpose language models — the key is building good prompts around them, not switching tools constantly.
@@ -79,7 +143,7 @@ export default function BestAiToolsSmallAgencies() {
           </section>
 
           {/* Client Onboarding */}
-          <section className="border-t border-gray-100 pt-8 mt-10">
+          <section id="client-onboarding" className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Client Onboarding</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
               Client onboarding is the most automatable part of agency work that most agencies still do manually. Intake forms, brief generation, kickoff prep, and follow-up emails can all run on autopilot with the right tools connected in the right order.
@@ -109,7 +173,7 @@ export default function BestAiToolsSmallAgencies() {
           </section>
 
           {/* SOPs and Internal Docs */}
-          <section className="border-t border-gray-100 pt-8 mt-10">
+          <section id="sops-docs" className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">SOPs and Internal Documentation</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
               Most small agencies have no SOPs — not because they don&apos;t want them, but because writing them is slow and feels like a low priority. AI drops the cost of writing documentation by about 80%. You still need to review and edit, but you don&apos;t start from a blank page.
@@ -128,7 +192,7 @@ export default function BestAiToolsSmallAgencies() {
           </section>
 
           {/* Workflow Automation */}
-          <section className="border-t border-gray-100 pt-8 mt-10">
+          <section id="workflow-automation" className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Workflow Automation</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
               The glue layer. AI tools produce outputs — automation tools route those outputs to the right places. Without automation, you&apos;re still manually copying things between tools. With it, your stack runs like a system.
@@ -169,6 +233,34 @@ export default function BestAiToolsSmallAgencies() {
               — it includes a recommended tool stack, setup checklist, and starter prompts.
             </p>
           </section>
+
+          {/* Final CTA */}
+          <div className="mt-10 border-t border-gray-100 pt-8">
+            <h2 className="text-xl font-semibold text-gray-900">What to do next</h2>
+            <div className="mt-6 space-y-3">
+              <Link
+                href="/templates/client-onboarding-ai-checklist"
+                className="block p-4 border border-gray-100 rounded-lg hover:border-gray-300 transition-colors"
+              >
+                <p className="font-medium text-gray-900">Download the AI Ops Starter Kit</p>
+                <p className="text-sm text-gray-500 mt-1">Free checklist with a recommended tool stack, setup steps, and starter prompts for small agencies.</p>
+              </Link>
+              <Link
+                href="/guides/automate-client-onboarding-small-agency"
+                className="block p-4 border border-gray-100 rounded-lg hover:border-gray-300 transition-colors"
+              >
+                <p className="font-medium text-gray-900">How to automate client onboarding</p>
+                <p className="text-sm text-gray-500 mt-1">A step-by-step guide to building a fully automated onboarding system using the tools above.</p>
+              </Link>
+              <Link
+                href="/newsletter"
+                className="block p-4 border border-gray-100 rounded-lg hover:border-gray-300 transition-colors"
+              >
+                <p className="font-medium text-gray-900">Get weekly AI systems in your inbox</p>
+                <p className="text-sm text-gray-500 mt-1">One workflow, one tool recommendation, one template — every week. No hype.</p>
+              </Link>
+            </div>
+          </div>
         </article>
       </div>
     </>
