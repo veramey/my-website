@@ -65,6 +65,13 @@ jobs:
           git config --global user.name "AI Teammate"
           git config --global user.email "agent.ai.native@gmail.com"
 
+      - name: Ensure issue is on project board
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          chmod +x scripts/add-to-project.sh
+          ./scripts/add-to-project.sh ${{ steps.issue.outputs.number }} "In progress" || true
+
       - name: Move issue to In progress
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
