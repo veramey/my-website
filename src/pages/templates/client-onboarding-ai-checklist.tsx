@@ -13,6 +13,21 @@ const whatIsInside = [
   { title: 'SOP prompt pack', description: 'Reusable AI prompts for writing and maintaining your internal SOPs.' },
 ]
 
+const expectedOutcomes = [
+  'Run a consistent client onboarding process every time — no improvising.',
+  'Cut back-and-forth with a structured intake and kickoff workflow.',
+  'Hand off projects to your team with clear documentation from day one.',
+  'Reduce the time it takes to get a new client fully onboarded.',
+  'Build a repeatable system your team can run without you.',
+]
+
+const assetItems = [
+  { title: '10 workflow templates', description: 'Ready-to-use AI workflows for intake, kickoff, delivery, and follow-up.' },
+  { title: 'Starter tool stack', description: 'A lean, opinionated list of tools that work for 2–10 person agencies.' },
+  { title: 'Onboarding checklist', description: 'Step-by-step checklist to take a new client from signed contract to active project.' },
+  { title: 'SOP prompt pack', description: 'Reusable AI prompts for writing and maintaining your internal SOPs.' },
+]
+
 const howToUseSteps = [
   { number: '01', title: 'Download the kit', description: 'Get the full package — templates, checklist, and prompt pack in one download.' },
   { number: '02', title: 'Pick your first workflow', description: 'Start with the area where your onboarding breaks down most often — intake, kickoff, or handoff.' },
@@ -137,8 +152,53 @@ export default function ClientOnboardingAiChecklist() {
           </div>
         </section>
 
-        {/* Section 6 — Download CTA */}
+        {/* Block 6 — Expected Outcomes */}
         <section className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Expected Outcomes</p>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">After using this kit, you should be able to:</h2>
+            <ul className="space-y-3 max-w-xl mb-10">
+              {expectedOutcomes.map((outcome) => (
+                <li key={outcome} className="flex items-start gap-3">
+                  <span className="text-gray-300 mt-0.5 shrink-0">—</span>
+                  <span className="text-sm text-gray-600">{outcome}</span>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="#download-form"
+              className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start inline-block"
+            >
+              Download free
+            </a>
+          </div>
+        </section>
+
+        {/* Block 7 — Asset Preview */}
+        <section>
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">What&apos;s in the package</p>
+            <div className="grid md:grid-cols-2 gap-6 max-w-2xl mb-8">
+              {assetItems.map((item) => (
+                <div key={item.title} className="border-t-2 border-gray-900 pt-4">
+                  <p className="text-sm font-semibold text-gray-900">{item.title}</p>
+                  <p className="mt-1 text-sm text-gray-500">{item.description}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-500 mb-2">Ready to use in Notion, Google Docs, or any workspace</p>
+            <p className="text-sm text-gray-500 mb-8">Most teams get their first workflow running in under an hour</p>
+            <a
+              href="#download-form"
+              className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start inline-block"
+            >
+              Get the full package
+            </a>
+          </div>
+        </section>
+
+        {/* Section 8 — Download CTA */}
+        <section id="download-form" className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-20">
             <div className="max-w-md">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Free Download</p>
