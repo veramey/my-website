@@ -169,6 +169,34 @@ export default function BestAiToolsSmallAgencies() {
               — it includes a recommended tool stack, setup checklist, and starter prompts.
             </p>
           </section>
+
+          {/* Final CTA */}
+          <div className="mt-10 border-t border-gray-100 pt-8">
+            <h2 className="text-xl font-semibold text-gray-900">What to do next</h2>
+            <div className="mt-6 space-y-3">
+              <Link
+                href="/templates/client-onboarding-ai-checklist"
+                className="block p-4 border border-gray-100 rounded-lg hover:border-gray-300 transition-colors"
+              >
+                <p className="font-medium text-gray-900">Download the AI Ops Starter Kit</p>
+                <p className="text-sm text-gray-500 mt-1">Free checklist with a recommended tool stack, setup steps, and starter prompts for small agencies.</p>
+              </Link>
+              <Link
+                href="/guides/automate-client-onboarding-small-agency"
+                className="block p-4 border border-gray-100 rounded-lg hover:border-gray-300 transition-colors"
+              >
+                <p className="font-medium text-gray-900">How to automate client onboarding</p>
+                <p className="text-sm text-gray-500 mt-1">A step-by-step guide to building a fully automated onboarding system using the tools above.</p>
+              </Link>
+              <Link
+                href="/newsletter"
+                className="block p-4 border border-gray-100 rounded-lg hover:border-gray-300 transition-colors"
+              >
+                <p className="font-medium text-gray-900">Get weekly AI systems in your inbox</p>
+                <p className="text-sm text-gray-500 mt-1">One workflow, one tool recommendation, one template — every week. No hype.</p>
+              </Link>
+            </div>
+          </div>
         </article>
       </div>
     </>
