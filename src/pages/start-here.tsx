@@ -2,24 +2,42 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 
-const newVisitorPath = [
+interface RouteCard {
+  title: string
+  pain: string
+  outcome: string
+  ctaLabel: string
+  href: string
+}
+
+const routeCards: RouteCard[] = [
   {
-    number: '01',
-    label: 'Read',
-    title: 'Best AI tools for small agencies',
-    href: '/tools/best-ai-tools-small-agencies',
+    title: "I'm new to AI ops",
+    pain: "Not sure where to start with AI for your agency.",
+    outcome: "Get the essential tools, workflows, and a starter kit in one reading path.",
+    ctaLabel: "Start the reading path",
+    href: "/tools/best-ai-tools-small-agencies",
   },
   {
-    number: '02',
-    label: 'Read',
-    title: '7 workflows to automate first',
-    href: '/guides/automate-client-onboarding-small-agency',
+    title: "I want quick wins",
+    pain: "You have a specific problem to fix — meeting notes, proposals, onboarding.",
+    outcome: "Find a focused workflow you can implement this week.",
+    ctaLabel: "See quick wins",
+    href: "/guides",
   },
   {
-    number: '03',
-    label: 'Download',
-    title: 'AI Ops Starter Kit',
-    href: '/templates/client-onboarding-ai-checklist',
+    title: "I'm choosing tools",
+    pain: "Too many AI tools, not sure which ones are worth it for a small team.",
+    outcome: "Honest roundups, comparisons, and budget stacks built for agencies.",
+    ctaLabel: "Browse tools",
+    href: "/tools",
+  },
+  {
+    title: "I want ready-made resources",
+    pain: "You want to skip the setup and get straight to using something.",
+    outcome: "Download templates, checklists, and systems ready to use today.",
+    ctaLabel: "See templates",
+    href: "/templates",
   },
 ]
 
@@ -79,24 +97,23 @@ export default function StartHere() {
           </div>
         </section>
 
-        {/* Block 2 — If You're New */}
+        {/* Block 2 — Route Cards */}
         <section className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-16">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">If you&apos;re new</h2>
-            <p className="text-sm text-gray-600 mb-8 max-w-xl">Start with this reading path. It covers the essentials — tools, workflows, and a starter kit to get moving fast.</p>
-            <div className="flex flex-col gap-4 max-w-xl">
-              {newVisitorPath.map((item) => (
-                <Link
-                  key={item.href + item.number}
-                  href={item.href}
-                  className="group flex items-start gap-5 bg-white border border-gray-100 rounded-lg p-5 hover:border-gray-300 transition-colors"
-                >
-                  <span className="text-2xl font-bold text-gray-200 leading-none shrink-0">{item.number}</span>
-                  <div>
-                    <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">{item.label}</span>
-                    <p className="mt-1 text-sm font-semibold text-gray-900 group-hover:text-gray-600 transition-colors leading-snug">{item.title}</p>
-                  </div>
-                </Link>
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Where do you want to start?</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+              {routeCards.map((card) => (
+                <div key={card.href + card.title} className="bg-white border border-gray-100 rounded-lg p-5 flex flex-col gap-3">
+                  <h3 className="font-semibold text-gray-900">{card.title}</h3>
+                  <p className="text-sm text-gray-600">{card.pain}</p>
+                  <p className="text-sm text-gray-600">{card.outcome}</p>
+                  <Link
+                    href={card.href}
+                    className="self-start bg-gray-900 text-white px-5 py-2.5 rounded text-sm font-medium hover:bg-gray-700 transition-colors"
+                  >
+                    {card.ctaLabel}
+                  </Link>
+                </div>
               ))}
             </div>
           </div>
