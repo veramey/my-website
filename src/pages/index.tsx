@@ -5,22 +5,25 @@ import Nav from '@/components/Nav'
 
 const featuredContent = [
   {
-    category: 'Tools',
-    title: 'Best AI Tools for Small Agencies in 2026',
-    description: 'A practical roundup of the tools that actually move the needle for lean agency teams.',
-    href: '/tools/best-ai-tools-small-agencies',
-  },
-  {
-    category: 'Guides',
-    title: 'How to Automate Client Onboarding',
-    description: 'Step-by-step workflow to cut onboarding time and reduce manual back-and-forth.',
+    label: 'Guide',
+    title: 'How to Automate Client Onboarding for a Small Agency',
+    whoItIsFor: 'For teams whose new projects still start with chaos',
+    ctaText: 'Read guide →',
     href: '/guides/automate-client-onboarding-small-agency',
   },
   {
-    category: 'Tools',
-    title: 'Best AI Meeting Assistants for Agency Teams',
-    description: 'Stop taking manual notes. Here are the tools worth using in 2026.',
-    href: '/tools/best-ai-meeting-assistants-agencies',
+    label: 'Template',
+    title: 'AI Ops Starter Kit',
+    whoItIsFor: 'For teams that want practical assets, not theory',
+    ctaText: 'Download kit →',
+    href: '/templates/client-onboarding-ai-checklist',
+  },
+  {
+    label: 'Tools',
+    title: 'Best AI Tools for Small Agencies',
+    whoItIsFor: 'For teams that want a lean stack under control',
+    ctaText: 'Explore tools →',
+    href: '/tools/best-ai-tools-small-agencies',
   },
 ]
 
@@ -188,13 +191,19 @@ export default function Home() {
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Featured</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {featuredContent.map((item) => (
-              <Link key={item.href} href={item.href} className="group block border border-gray-100 rounded-lg p-5 hover:border-gray-300 transition-colors">
-                <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">{item.category}</span>
-                <h3 className="mt-2 text-sm font-semibold text-gray-900 group-hover:text-gray-600 transition-colors leading-snug">
+              <div key={item.href} className="border border-gray-100 rounded-lg p-5 flex flex-col">
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">{item.label}</span>
+                <h3 className="mt-2 text-sm font-semibold text-gray-900 leading-snug">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-500 leading-relaxed">{item.description}</p>
-              </Link>
+                <p className="mt-2 text-sm text-gray-500 leading-relaxed">{item.whoItIsFor}</p>
+                <Link
+                  href={item.href}
+                  className="mt-4 inline-block text-xs font-medium text-gray-900 hover:text-gray-600 transition-colors"
+                >
+                  {item.ctaText}
+                </Link>
+              </div>
             ))}
           </div>
         </section>
