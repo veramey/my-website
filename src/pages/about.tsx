@@ -116,7 +116,7 @@ export default function About() {
         <div className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-16">
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Why This Approach Works</h2>
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">Why This Approach Works</h2>
               <ul className="max-w-2xl space-y-3">
                 <li className="text-base text-gray-600 leading-relaxed">
                   <span className="font-medium text-gray-900">Practical, no-fluff content.</span> — content that skips the hype and gets straight to implementation
