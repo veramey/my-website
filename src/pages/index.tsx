@@ -121,12 +121,17 @@ export default function Home() {
                 Start Here
               </Link>
               <Link
-                href="/guides"
+                href="/templates/client-onboarding-ai-checklist"
                 className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded hover:border-gray-500 transition-colors"
               >
-                Browse Guides
+                Download the starter kit
               </Link>
             </div>
+            <ul className="mt-6 space-y-1.5 list-disc list-inside">
+              <li className="text-sm text-gray-500">No AI hype or news</li>
+              <li className="text-sm text-gray-500">Implementation-ready systems</li>
+              <li className="text-sm text-gray-500">Built for 2–10-person teams</li>
+            </ul>
           </div>
         </section>
 
