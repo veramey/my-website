@@ -248,6 +248,37 @@ export default function SevenWorkflowsAutomateSmallAgency() {
             </p>
           </section>
 
+          {/* Related Resources */}
+          <section className="border-t border-gray-200 pt-10 mt-12">
+            <h2 className="text-xl font-semibold text-gray-900">Related resources</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+              <Link
+                href="/guides/automate-client-onboarding-small-agency"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: How to Automate Client Onboarding for a Small Agency"
+              >
+                <p className="text-sm font-medium text-gray-900">How to Automate Client Onboarding</p>
+                <p className="mt-1 text-sm text-gray-500">Step-by-step: intake form, AI brief generation, kickoff prep, and follow-up handoff.</p>
+              </Link>
+              <Link
+                href="/tools/best-ai-tools-small-agencies"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: Best AI Tools for Small Agencies in 2026"
+              >
+                <p className="text-sm font-medium text-gray-900">Best AI Tools for Small Agencies</p>
+                <p className="mt-1 text-sm text-gray-500">The tools that move the needle for lean teams — meeting assistants, drafting, automation, and more.</p>
+              </Link>
+              <Link
+                href="/tools/best-ai-meeting-assistants-agencies"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: Best AI Meeting Assistants for Agency Teams"
+              >
+                <p className="text-sm font-medium text-gray-900">Best AI Meeting Assistants for Agencies</p>
+                <p className="mt-1 text-sm text-gray-500">Honest comparison of Fathom, Fireflies, Otter, and Grain — with use cases and pricing.</p>
+              </Link>
+            </div>
+          </section>
+
           {/* Closing */}
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Where to Start</h2>
