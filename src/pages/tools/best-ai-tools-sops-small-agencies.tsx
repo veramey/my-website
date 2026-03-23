@@ -37,6 +37,7 @@ export default function BestAiToolsSopsSmallAgencies() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               SOPs are the difference between an agency that scales and one that falls apart every time someone goes on vacation. Most small teams know this. The problem isn&apos;t motivation — it&apos;s that writing SOPs has always been slow, boring work that nobody prioritizes. AI changes the economics. A process that used to take 30 minutes to document now takes five. These are the tools that make that possible.
             </p>
+            <p className="mt-3 text-sm text-gray-400">5–7 min read · For: agency operators and team leads</p>
           </header>
 
           {/* Section 1: Criteria */}
