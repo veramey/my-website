@@ -13,6 +13,29 @@ const whatIsInside = [
   { title: 'SOP prompt pack', description: 'Reusable AI prompts for writing and maintaining your internal SOPs.' },
 ]
 
+const faqs = [
+  {
+    question: 'What exactly is included in the AI Ops Starter Kit?',
+    answer: 'The kit includes 10 workflow templates, a starter tool stack recommendation, a step-by-step onboarding checklist, and a reusable SOP prompt pack — all in one download.',
+  },
+  {
+    question: 'Do I need technical expertise to use these templates?',
+    answer: 'No. Everything is built to be edited in a doc or Notion. You replace placeholder text with your own steps and language. No code, no complex setup.',
+  },
+  {
+    question: 'How long does it take to implement?',
+    answer: 'Most agencies run their first workflow manually within an hour of downloading. Full implementation across your onboarding process typically takes a few days of incremental adoption.',
+  },
+  {
+    question: 'Can I customise these templates for my team?',
+    answer: 'Yes — that is the point. Each template is a starting point. Adapt the steps, rename the phases, and swap in the tools your team already uses.',
+  },
+  {
+    question: 'Is this really free?',
+    answer: 'Yes. No payment required. Enter your email and the full kit is delivered to your inbox. No upsell on the download page.',
+  },
+]
+
 const howToUseSteps = [
   { number: '01', title: 'Download the kit', description: 'Get the full package — templates, checklist, and prompt pack in one download.' },
   { number: '02', title: 'Pick your first workflow', description: 'Start with the area where your onboarding breaks down most often — intake, kickoff, or handoff.' },
@@ -137,8 +160,56 @@ export default function ClientOnboardingAiChecklist() {
           </div>
         </section>
 
-        {/* Section 6 — Download CTA */}
+        {/* Block 8 — FAQ */}
         <section className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">FAQ</p>
+            <h2 className="text-2xl font-bold text-gray-900 leading-tight tracking-tight mb-10">
+              Common questions
+            </h2>
+            <dl className="max-w-2xl">
+              {faqs.map((faq) => (
+                <div key={faq.question} className="border-t border-gray-100 py-5">
+                  <dt className="text-sm font-semibold text-gray-900 mb-1">{faq.question}</dt>
+                  <dd className="text-sm text-gray-500">{faq.answer}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-10">
+              <a
+                href="#download-form"
+                className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors inline-block"
+              >
+                Download free
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Block 9 — Final CTA */}
+        <section className="bg-white">
+          <div className="max-w-5xl mx-auto px-6 py-20">
+            <div className="max-w-xl">
+              <h2 className="text-3xl font-bold text-gray-900 leading-tight tracking-tight">
+                Download the AI Ops Starter Kit
+              </h2>
+              <p className="mt-4 text-base text-gray-600 leading-relaxed">
+                Turn your onboarding from improvised to repeatable.
+              </p>
+              <div className="mt-8">
+                <a
+                  href="#download-form"
+                  className="px-6 py-3 bg-gray-900 text-white text-base font-medium rounded hover:bg-gray-700 transition-colors inline-block"
+                >
+                  Download free
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 6 — Download CTA */}
+        <section id="download-form" className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-20">
             <div className="max-w-md">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Free Download</p>
