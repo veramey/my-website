@@ -152,10 +152,44 @@ jobs:
               gh pr comment "$PR_NUM" --repo "$REPO" \
                 --body "🤖 **Conflict auto-resolved** (strategy: Claude merge). Genuine conflict in \`$CONFLICTED\` — both sides integrated. Please review the diff before merging."
             else
-              echo "✗ All strategies failed — flagging for human review"
+              echo "✗ All strategies failed — moving to Blocked on project board"
               gh pr comment "$PR_NUM" --repo "$REPO" \
-                --body "⚠️ **Auto-resolution failed** — conflict in \`$CONFLICTED\` could not be resolved automatically. Manual review required."
+                --body "⚠️ **Auto-resolution failed** — conflict in \`$CONFLICTED\` could not be resolved automatically. Moved to Blocked on the project board."
               gh pr edit "$PR_NUM" --repo "$REPO" --add-label "blocked" 2>/dev/null || true
+
+              # Move linked issue to Blocked column on the project board
+              ISSUE_NUM=$(echo "$BRANCH" | grep -oP '(?<=issue-)\d+' || true)
+              if [ -n "$ISSUE_NUM" ]; then
+                ITEM_ID=$(gh api graphql -f query="
+                  { node(id: \"PVT_kwHOCpm1Ds4BSVR7\") {
+                    ... on ProjectV2 {
+                      items(first: 100) {
+                        nodes {
+                          id
+                          content { ... on Issue { number } }
+                        }
+                      }
+                    }
+                  }
+                }" --jq ".data.node.items.nodes[] | select(.content.number == $ISSUE_NUM) | .id" 2>/dev/null || true)
+
+                if [ -n "$ITEM_ID" ]; then
+                  gh api graphql -f query='
+                    mutation($project: ID!, $item: ID!, $field: ID!, $value: String!) {
+                      updateProjectV2ItemFieldValue(input: {
+                        projectId: $project
+                        itemId: $item
+                        fieldId: $field
+                        value: { singleSelectOptionId: $value }
+                      }) { projectV2Item { id } }
+                    }' \
+                    -f project="PVT_kwHOCpm1Ds4BSVR7" \
+                    -f item="$ITEM_ID" \
+                    -f field="PVTSSF_lAHOCpm1Ds4BSVR7zg_5gmo" \
+                    -f value="1263d2c4" 2>/dev/null || true
+                  echo "✓ Moved issue #$ISSUE_NUM to Blocked column"
+                fi
+              fi
             fi
 
             git rebase --abort 2>/dev/null || true
