@@ -112,28 +112,28 @@ export default function About() {
           </div>
         </div>
 
-        {/* Section 5 — Why This Approach Works */}
-        <div className="border-t border-gray-100 bg-gray-50">
+        {/* Block 5 — Why This Approach Works */}
+        <section className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-16">
-            <section>
-              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">Why This Approach Works</h2>
-              <ul className="max-w-2xl space-y-3">
+            <div className="max-w-2xl">
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">Why this approach works</h2>
+              <ul className="space-y-3">
                 <li className="text-base text-gray-600 leading-relaxed">
-                  <span className="font-medium text-gray-900">Practical, no-fluff content.</span> — content that skips the hype and gets straight to implementation
+                  <span className="font-medium text-gray-900">Practical, no-fluff content.</span> — focused on what actually moves the needle
                 </li>
                 <li className="text-base text-gray-600 leading-relaxed">
-                  <span className="font-medium text-gray-900">Built for lean teams, not enterprise.</span> — everything here is sized for 2–10 person agencies
+                  <span className="font-medium text-gray-900">Built for lean teams, not enterprise.</span> — every system is sized for 2–10 person agencies
                 </li>
                 <li className="text-base text-gray-600 leading-relaxed">
-                  <span className="font-medium text-gray-900">Implementation-first — every piece has a next action.</span> — no theory without a takeaway
+                  <span className="font-medium text-gray-900">Implementation-first — every piece has a next action.</span> — no theory without application
                 </li>
               </ul>
               <Link href="/templates/client-onboarding-ai-checklist" className="inline-block mt-6 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
                 Download the starter kit →
               </Link>
-            </section>
+            </div>
           </div>
-        </div>
+        </section>
       </main>
 
       <footer className="border-t border-gray-100">
