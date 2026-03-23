@@ -210,6 +210,48 @@ export default function BestAiToolsSmallAgencies() {
             </aside>
           </section>
 
+          {/* Stack Bundles */}
+          <section className="border-t border-gray-100 pt-8 mt-10">
+            <h2 className="text-xl font-semibold text-gray-900">Pre-built stacks by budget</h2>
+            <p className="mt-3 text-base text-gray-600 leading-relaxed">
+              Not sure where to start? These bundles give you a working stack at three common budget levels. Each one is opinionated and lean — pick the one that fits your team size and monthly spend.
+            </p>
+            <div className="mt-6 space-y-4">
+              <div className="mt-6 border border-gray-100 rounded-lg p-5">
+                <p className="text-base font-semibold text-gray-900">Under $50/month</p>
+                <p className="mt-2 text-sm text-gray-600">Tools: Fathom (free), Claude or ChatGPT ($20), Notion (free tier), Tally (free)</p>
+                <p className="mt-1 text-sm text-gray-600">Supports: meeting summaries, basic drafting, light documentation</p>
+                <p className="mt-1 text-sm text-gray-600">Best for: solo operators and very early-stage agencies getting started with AI</p>
+              </div>
+              <div className="mt-6 border border-gray-100 rounded-lg p-5">
+                <p className="text-base font-semibold text-gray-900">Under $150/month</p>
+                <p className="mt-2 text-sm text-gray-600">Tools: Fireflies.ai ($19), Claude Pro ($20), Notion Plus ($16), Make ($9), Tally or Typeform ($29)</p>
+                <p className="mt-1 text-sm text-gray-600">Supports: full meeting workflow, onboarding automation, proposal drafting, SOP creation</p>
+                <p className="mt-1 text-sm text-gray-600">Best for: 2–5 person agencies running active client work and wanting a complete ops layer</p>
+              </div>
+              <div className="mt-6 border border-gray-100 rounded-lg p-5">
+                <p className="text-base font-semibold text-gray-900">Team-ready ($150–250/month)</p>
+                <p className="mt-2 text-sm text-gray-600">Tools: Fireflies.ai Team ($39), Claude Team or GPT-4o ($30/seat), Notion Plus team, Make Core ($16), Typeform ($50), Loom Starter ($12)</p>
+                <p className="mt-1 text-sm text-gray-600">Supports: multi-user access, team-wide automations, shared documentation and SOP library, async comms</p>
+                <p className="mt-1 text-sm text-gray-600">Best for: agencies of 5–10 people that need shared tooling, consistent workflows, and room to scale</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Common Mistakes */}
+          <section className="border-t border-gray-100 pt-8 mt-10">
+            <h2 className="text-xl font-semibold text-gray-900">What to avoid</h2>
+            <p className="mt-3 text-base text-gray-600 leading-relaxed">
+              Most small agencies make the same mistakes when adopting AI tools. Here&apos;s what to watch for.
+            </p>
+            <ul className="mt-4 space-y-3 text-base text-gray-600 leading-relaxed">
+              <li><span className="font-medium text-gray-900">Buying too many tools at once.</span> Adding five tools in a week means none of them get properly set up. Pick one problem, solve it completely, then move to the next.</li>
+              <li><span className="font-medium text-gray-900">Using AI without a prompt system.</span> Typing something different into ChatGPT every time you need a proposal is not a system — it&apos;s just a faster blank page. Build reusable prompts and save them somewhere your team can find them.</li>
+              <li><span className="font-medium text-gray-900">Ignoring the automation layer.</span> AI tools produce outputs. Without automation connecting those outputs to the right places, you&apos;re still doing manual work. The glue layer is where the real time savings come from.</li>
+              <li><span className="font-medium text-gray-900">Optimizing for features instead of outcomes.</span> The best tool is the one your team actually uses. A simpler tool that gets used every day beats a powerful tool that feels like too much work to open.</li>
+            </ul>
+          </section>
+
           {/* How to Choose */}
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">How to Choose Your Stack</h2>
