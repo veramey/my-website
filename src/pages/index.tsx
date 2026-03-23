@@ -165,9 +165,9 @@ export default function Home() {
             </div>
             <ul className="mt-6 space-y-2">
               {[
-                'No hype — only practical systems',
-                'Built for small teams, not enterprise',
-                'Guides, templates, and tool stacks you can use this week',
+                'No AI hype or news',
+                'Implementation-ready systems',
+                'Built for 2–10-person teams',
               ].map((bullet) => (
                 <li key={bullet} className="flex items-start gap-2 text-sm text-gray-500">
                   <span className="mt-0.5 text-gray-300" aria-hidden="true">—</span>
