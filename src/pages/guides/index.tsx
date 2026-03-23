@@ -87,7 +87,7 @@ export default function GuidesIndex() {
                         {article.description}
                       </p>
                       {(article.readingTime || article.whoItIsFor) && (
-                        <div className="flex gap-3 mt-3">
+                        <div className="mt-3 flex flex-wrap gap-3">
                           {article.readingTime && (
                             <span className="text-xs text-gray-400">{article.readingTime}</span>
                           )}
