@@ -12,6 +12,7 @@ const SUBCATEGORY_ORDER: GuideSubcategory[] = [
 
 const SUBCATEGORY_ANCHOR: Partial<Record<GuideSubcategory, string>> = {
   'Client Onboarding': 'onboarding',
+  'Delivery & Client Work': 'delivery',
   'Internal Operations': 'internal-ops',
 }
 
@@ -56,6 +57,15 @@ export default function GuidesIndex() {
           How-to articles, workflow systems, and implementation guides for running a leaner agency with AI.
         </p>
 
+        <nav aria-label="Topic navigation" className="mt-6">
+          <div className="inline-flex items-center gap-x-3 flex-wrap">
+            <a href="#onboarding" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Onboarding</a>
+            <a href="#internal-ops" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Internal Ops</a>
+            <a href="#delivery" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Delivery</a>
+            <a href="#automation" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Automation</a>
+          </div>
+        </nav>
+
         {subcategories.length === 0 ? null : (
           <div className="mt-14 space-y-14">
             {subcategories.map((subcategory) => (
@@ -76,6 +86,16 @@ export default function GuidesIndex() {
                       <p className="mt-2 text-sm text-gray-500 leading-relaxed">
                         {article.description}
                       </p>
+                      {(article.readingTime || article.whoItIsFor) && (
+                        <div className="flex gap-3 mt-3">
+                          {article.readingTime && (
+                            <span className="text-xs text-gray-400">{article.readingTime}</span>
+                          )}
+                          {article.whoItIsFor && (
+                            <span className="text-xs text-gray-400">{article.whoItIsFor}</span>
+                          )}
+                        </div>
+                      )}
                     </Link>
                   ))}
                 </div>
@@ -83,6 +103,23 @@ export default function GuidesIndex() {
             ))}
           </div>
         )}
+        <section className="mt-16 border-t border-gray-100 pt-12">
+          <h2 className="text-sm font-semibold text-gray-900 tracking-tight">Coming next</h2>
+          <ul className="mt-4 space-y-2">
+            <li className="text-sm text-gray-500">Proposal workflow guide</li>
+            <li className="text-sm text-gray-500">SOP writing workflow guide</li>
+            <li className="text-sm text-gray-500">Internal reporting system guide</li>
+            <li className="text-sm text-gray-500">Client follow-up automation guide</li>
+          </ul>
+          <div className="mt-6">
+            <Link
+              href="/newsletter"
+              className="text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors"
+            >
+              Join newsletter for new guides
+            </Link>
+          </div>
+        </section>
       </main>
     </>
   )

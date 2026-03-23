@@ -10,6 +10,8 @@ export interface GuideArticle {
   description: string
   subcategory: GuideSubcategory
   href: string
+  readingTime?: string
+  whoItIsFor?: string
 }
 
 export const guides: GuideArticle[] = [
@@ -20,6 +22,8 @@ export const guides: GuideArticle[] = [
       'A practical system for automating your client onboarding process using AI tools — from intake forms to kickoff workflows.',
     subcategory: 'Client Onboarding',
     href: '/guides/automate-client-onboarding-small-agency',
+    readingTime: '8 min read',
+    whoItIsFor: 'Agency owners',
   },
   {
     slug: 'discovery-call-to-proposal-workflow-agency',
@@ -28,6 +32,7 @@ export const guides: GuideArticle[] = [
       'A step-by-step AI workflow to go from discovery call recording to polished proposal in under 45 minutes.',
     subcategory: 'Delivery & Client Work',
     href: '/guides/discovery-call-to-proposal-workflow-agency',
+    readingTime: '5 min read',
   },
   {
     slug: '7-workflows-automate-small-agency',
@@ -36,5 +41,7 @@ export const guides: GuideArticle[] = [
       'The 7 highest-ROI automations for small agencies — from client onboarding to weekly reporting.',
     subcategory: 'Internal Operations',
     href: '/guides/7-workflows-automate-small-agency',
+    readingTime: '12 min read',
+    whoItIsFor: 'Ops leads & founders',
   },
 ]
