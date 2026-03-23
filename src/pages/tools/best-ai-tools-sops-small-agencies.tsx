@@ -146,6 +146,37 @@ export default function BestAiToolsSopsSmallAgencies() {
             </p>
           </section>
 
+          {/* Related Resources */}
+          <section className="border-t border-gray-200 pt-10 mt-12">
+            <h2 className="text-xl font-semibold text-gray-900">Related resources</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+              <Link
+                href="/guides/7-workflows-automate-small-agency"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: 7 Workflows Every Small Agency Should Automate with AI"
+              >
+                <p className="text-sm font-medium text-gray-900">7 Workflows to Automate First</p>
+                <p className="mt-1 text-sm text-gray-500">SOP documentation is one of seven high-ROI automations — see the full list with time-saving breakdowns.</p>
+              </Link>
+              <Link
+                href="/tools/best-ai-stack-agencies-under-150"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: Best AI Stack for Small Agencies Under $150/Month"
+              >
+                <p className="text-sm font-medium text-gray-900">Best AI Stack Under $150/Month</p>
+                <p className="mt-1 text-sm text-gray-500">Two concrete stacks that include SOP tools — with real prices and how they connect as a system.</p>
+              </Link>
+              <Link
+                href="/tools/best-ai-tools-small-agencies"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: Best AI Tools for Small Agencies in 2026"
+              >
+                <p className="text-sm font-medium text-gray-900">Best AI Tools for Small Agencies</p>
+                <p className="mt-1 text-sm text-gray-500">SOPs are one piece. Here's the full tool roundup across meeting assistants, writing, and automation.</p>
+              </Link>
+            </div>
+          </section>
+
           {/* Section 6: What to Avoid */}
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">What to Avoid</h2>

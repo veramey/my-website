@@ -135,6 +135,37 @@ export default function BestAIMeetingAssistants() {
             </aside>
           </section>
 
+          {/* Related Resources */}
+          <section className="border-t border-gray-200 pt-10 mt-12">
+            <h2 className="text-xl font-semibold text-gray-900">Related resources</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+              <Link
+                href="/guides/automate-client-onboarding-small-agency"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: How to Automate Client Onboarding for a Small Agency"
+              >
+                <p className="text-sm font-medium text-gray-900">How to Automate Client Onboarding</p>
+                <p className="mt-1 text-sm text-gray-500">See how meeting tools fit into a full onboarding system — from intake to kickoff to follow-up.</p>
+              </Link>
+              <Link
+                href="/guides/7-workflows-automate-small-agency"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: 7 Workflows Every Small Agency Should Automate with AI"
+              >
+                <p className="text-sm font-medium text-gray-900">7 Workflows to Automate First</p>
+                <p className="mt-1 text-sm text-gray-500">Meeting follow-ups are one of seven high-ROI automations for small agencies. Here's the complete list.</p>
+              </Link>
+              <Link
+                href="/tools/best-ai-tools-small-agencies"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Read: Best AI Tools for Small Agencies in 2026"
+              >
+                <p className="text-sm font-medium text-gray-900">Best AI Tools for Small Agencies</p>
+                <p className="mt-1 text-sm text-gray-500">Meeting assistants are one piece. Here's the full tool roundup covering writing, automation, and ops.</p>
+              </Link>
+            </div>
+          </section>
+
           {/* How to choose */}
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Which One Should You Use?</h2>
