@@ -45,18 +45,27 @@ const startHereCards = [
 const pillars = [
   {
     title: 'Client Onboarding & Delivery',
+    description: '',
     topics: ['Intake and intake forms', 'Proposals and kickoffs', 'Client follow-ups', 'Handoff processes'],
     href: '/guides#onboarding',
   },
   {
     title: 'Internal Ops & SOPs',
+    description: '',
     topics: ['Process documentation', 'Meeting workflows', 'Recurring task systems', 'Internal reporting'],
     href: '/guides#internal-ops',
   },
   {
     title: 'Tools & Stacks',
+    description: '',
     topics: ['Best tools by category', 'Head-to-head comparisons', 'Budget stacks', 'Tool reviews'],
     href: '/tools',
+  },
+  {
+    title: 'Templates & starter systems',
+    description: 'Ready-to-use assets to help you implement faster and stop starting from scratch.',
+    topics: ['Onboarding checklist', 'SOP prompt pack', 'Workflow templates', 'Starter tool stack'],
+    href: '/templates',
   },
 ]
 
@@ -177,10 +186,13 @@ export default function Home() {
         {/* Block 5 — Content Categories */}
         <section className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Content Pillars</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-4 gap-6">
             {pillars.map((pillar) => (
-              <div key={pillar.title} className="border-t-2 border-gray-900 pt-5">
+              <div key={pillar.title} data-testid="pillar-card" className="border-t-2 border-gray-900 pt-5">
                 <h3 className="text-sm font-semibold text-gray-900">{pillar.title}</h3>
+                {pillar.description && (
+                  <p className="mt-2 text-sm text-gray-500 leading-relaxed">{pillar.description}</p>
+                )}
                 <ul className="mt-3 space-y-1.5">
                   {pillar.topics.map((topic) => (
                     <li key={topic} className="text-sm text-gray-500">{topic}</li>
