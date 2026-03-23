@@ -139,6 +139,47 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Block 2b — Who It's For */}
+        <section className="border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-14">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Who It&apos;s For</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-4">For</h3>
+                <ul className="space-y-2">
+                  {[
+                    'Small agencies',
+                    'Boutique studios',
+                    'Lean service businesses',
+                    'Founders, operators, delivery leads',
+                    'Teams that want better systems without bloated ops',
+                  ].map((item) => (
+                    <li key={item} className="text-sm text-gray-600">{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-4">Not for</h3>
+                <ul className="space-y-2">
+                  {[
+                    'Enterprise transformation teams',
+                    'AI news readers',
+                    'Tool collectors',
+                    'Teams that want hype instead of implementation',
+                  ].map((item) => (
+                    <li key={item} className="text-sm text-gray-600">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="mt-8">
+              <Link href="/start-here" className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
+                See the best place to start →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* Block 3 — Content Highlights */}
         <section className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Featured</h2>
