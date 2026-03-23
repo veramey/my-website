@@ -3,7 +3,15 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 
-const featuredContent = [
+interface FeaturedItem {
+  label: string
+  title: string
+  whoItIsFor: string
+  ctaText: string
+  href: string
+}
+
+const featuredContent: FeaturedItem[] = [
   {
     label: 'Guide',
     title: 'How to Automate Client Onboarding for a Small Agency',
@@ -65,7 +73,7 @@ const pillars = [
     href: '/tools',
   },
   {
-    title: 'Templates & starter systems',
+    title: 'Templates & Starter Systems',
     description: 'Ready-to-use assets to help you implement faster and stop starting from scratch.',
     topics: ['Onboarding checklist', 'SOP prompt pack', 'Workflow templates', 'Starter tool stack'],
     href: '/templates',
@@ -277,7 +285,7 @@ export default function Home() {
         {/* Block 5 — Content Categories */}
         <section className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Content Pillars</h2>
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {pillars.map((pillar) => (
               <div key={pillar.title} data-testid="pillar-card" className="border-t-2 border-gray-900 pt-5">
                 <h3 className="text-sm font-semibold text-gray-900">{pillar.title}</h3>
