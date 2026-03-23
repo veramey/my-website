@@ -81,35 +81,27 @@ export default function About() {
         </div>
 
         {/* Section 4 — What You'll Find Here */}
-        <div className="border-t border-gray-100">
-          <div className="max-w-5xl mx-auto px-6 py-16">
-            <section>
-              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">What You&apos;ll Find Here</h2>
-              <div className="max-w-2xl">
-                <p className="text-base text-gray-600 leading-relaxed">
-                  Guides, tools, and templates built around one question: what actually helps a small agency run better? Every piece of content is scoped to teams of 2–10 people and written to give you something you can use today.
-                </p>
-                <p className="mt-4 text-base text-gray-600 leading-relaxed">
-                  No sponsored roundups. No tool-of-the-week takes. Just the workflows, stacks, and systems worth your time.
-                </p>
-                <ul className="mt-4 space-y-3">
-                  <li>
-                    <Link href="/guides" className="font-medium text-gray-900 hover:underline">Guides</Link>
-                  </li>
-                  <li>
-                    <Link href="/tools" className="font-medium text-gray-900 hover:underline">Tool roundups</Link>
-                  </li>
-                  <li>
-                    <Link href="/templates" className="font-medium text-gray-900 hover:underline">Templates</Link>
-                  </li>
-                  <li>
-                    <Link href="/newsletter" className="font-medium text-gray-900 hover:underline">Newsletter</Link>
-                  </li>
-                </ul>
-                <Link href="/guides" className="inline-block mt-6 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">Browse resources →</Link>
-              </div>
-            </section>
-          </div>
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <section>
+            <div className="max-w-2xl">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">What you&apos;ll find here</h2>
+              <ul className="space-y-3">
+                <li>
+                  <Link href="/guides" className="font-medium text-gray-900 hover:underline">Guides</Link>
+                </li>
+                <li>
+                  <Link href="/tools" className="font-medium text-gray-900 hover:underline">Tool roundups</Link>
+                </li>
+                <li>
+                  <Link href="/templates" className="font-medium text-gray-900 hover:underline">Templates</Link>
+                </li>
+                <li>
+                  <Link href="/newsletter" className="font-medium text-gray-900 hover:underline">Newsletter</Link>
+                </li>
+              </ul>
+              <Link href="/guides" className="inline-block mt-6 text-sm font-medium text-gray-900 underline hover:no-underline">Browse resources →</Link>
+            </div>
+          </section>
         </div>
 
         {/* Block 5 — Why This Approach Works */}
