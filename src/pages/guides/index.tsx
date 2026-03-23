@@ -12,6 +12,7 @@ const SUBCATEGORY_ORDER: GuideSubcategory[] = [
 
 const SUBCATEGORY_ANCHOR: Partial<Record<GuideSubcategory, string>> = {
   'Client Onboarding': 'onboarding',
+  'Delivery & Client Work': 'delivery',
   'Internal Operations': 'internal-ops',
 }
 
@@ -55,6 +56,15 @@ export default function GuidesIndex() {
         <p className="mt-3 text-base text-gray-500 max-w-xl">
           How-to articles, workflow systems, and implementation guides for running a leaner agency with AI.
         </p>
+
+        <nav aria-label="Topic navigation" className="mt-6">
+          <div className="inline-flex items-center gap-x-3 flex-wrap">
+            <a href="#onboarding" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Onboarding</a>
+            <a href="#internal-ops" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Internal Ops</a>
+            <a href="#delivery" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Delivery</a>
+            <a href="#automation" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Automation</a>
+          </div>
+        </nav>
 
         {subcategories.length === 0 ? null : (
           <div className="mt-14 space-y-14">
