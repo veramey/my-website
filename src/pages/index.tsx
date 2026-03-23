@@ -242,15 +242,26 @@ export default function Home() {
         {/* Block 7 — Trust Signals */}
         <section className="border-t border-gray-100">
           <div className="max-w-5xl mx-auto px-6 py-14">
-            <div className="grid md:grid-cols-3 gap-6 text-center">
+            <h2 className="text-xl font-bold text-gray-900">Built for operators, not spectators</h2>
+            <ul className="mt-6 space-y-3">
               {[
-                'Practical, no-fluff AI ops content',
-                'Designed for small teams',
-                'Focused on implementation, not hype',
-              ].map((signal) => (
-                <p key={signal} className="text-sm text-gray-500 font-medium">{signal}</p>
+                'Designed around real small-team constraints',
+                'Focused on workflows, not hype cycles',
+                'Opinionated recommendations, not bloated tool lists',
+                'Meant to be used, not just read',
+              ].map((point) => (
+                <li key={point} className="flex items-start gap-2 text-sm text-gray-600">
+                  <span className="mt-0.5 text-gray-400" aria-hidden="true">—</span>
+                  {point}
+                </li>
               ))}
-            </div>
+            </ul>
+            <Link
+              href="/about"
+              className="mt-8 inline-block text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors"
+            >
+              Learn more about the project →
+            </Link>
           </div>
         </section>
 
