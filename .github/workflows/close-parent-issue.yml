@@ -14,13 +14,22 @@ jobs:
     env:
       GITHUB_REPOSITORY: ${{ github.repository }}
       GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-    if: contains(github.event.issue.labels.*.name, 'sub-issue')
+    if: ${{ true }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Move closed issue to Done on project board
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+        run: |
+          chmod +x scripts/update-project-status.sh
+          ./scripts/update-project-status.sh "${{ github.event.issue.number }}" "Done" || true
 
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
