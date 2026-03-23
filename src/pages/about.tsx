@@ -121,7 +121,7 @@ export default function About() {
               </div>
             </section>
           </div>
-        </section>
+        </div>
       </main>
 
       <footer className="border-t border-gray-100">
