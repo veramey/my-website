@@ -84,7 +84,7 @@ export default function About() {
         <div className="max-w-5xl mx-auto px-6 py-16">
           <section>
             <div className="max-w-2xl">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">What you&apos;ll find here</h2>
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">What you&apos;ll find here</h2>
               <ul className="space-y-3">
                 <li>
                   <Link href="/guides" className="font-medium text-gray-900 hover:underline">Guides</Link>
