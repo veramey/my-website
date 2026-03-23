@@ -134,7 +134,7 @@ export default function Home() {
             <p className="mt-5 text-lg text-gray-600 leading-relaxed">
               Practical workflows, tools, and templates to help lean teams run tighter operations and deliver better client work.
             </p>
-            <div className="mt-8 flex items-center gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <Link
                 href="/start-here"
                 className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors"
@@ -268,7 +268,7 @@ export default function Home() {
               {status === 'success' ? (
                 <p className="mt-6 text-sm text-green-600 font-medium">✓ You&apos;re subscribed. Talk soon.</p>
               ) : (
-                <form className="mt-6 flex gap-2" onSubmit={handleSubscribe}>
+                <form className="mt-6 flex flex-col sm:flex-row gap-2" onSubmit={handleSubscribe}>
                   <input
                     type="email"
                     placeholder="your@email.com"
