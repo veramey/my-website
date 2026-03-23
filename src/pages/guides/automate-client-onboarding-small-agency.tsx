@@ -1,10 +1,13 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import { guides } from '@/lib/guides'
 
 const CANONICAL_URL = 'https://www.aiopagency.com/guides/automate-client-onboarding-small-agency'
 
 export default function AutomateClientOnboarding() {
+  const guide = guides.find((g) => g.slug === 'automate-client-onboarding-small-agency')
+
   return (
     <>
       <Head>
@@ -37,7 +40,12 @@ export default function AutomateClientOnboarding() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               Most small agencies waste hours every time they onboard a new client — chasing intake forms, manually prepping briefs, and writing the same kickoff emails. This guide walks through a four-step workflow that replaces that manual overhead with a system that runs itself.
             </p>
-            <p className="mt-3 text-sm text-gray-400">7–10 min read · For: 2–10 person agencies</p>
+            {(guide?.readingTime || guide?.whoItIsFor) && (
+              <div className="mt-3 flex flex-wrap gap-3 text-sm text-gray-400">
+                {guide.readingTime && <span>{guide.readingTime}</span>}
+                {guide.whoItIsFor && <span>{guide.whoItIsFor}</span>}
+              </div>
+            )}
           </header>
 
           {/* Workflow Overview */}
