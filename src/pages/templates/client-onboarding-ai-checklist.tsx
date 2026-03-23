@@ -21,6 +21,28 @@ const howToUseSteps = [
   { number: '05', title: 'Automate incrementally', description: 'Once a workflow runs smoothly manually, layer in automation tools (Zapier, Make, or native integrations).' },
 ]
 
+const expectedOutcomes = [
+  'Reduce onboarding chaos',
+  'Standardize repeated tasks',
+  'Move faster from intake to kickoff',
+  'Create documentation faster',
+]
+
+const assetItems = [
+  { label: '10 workflow templates', format: 'Google Docs / Notion' },
+  { label: 'Onboarding checklist', format: 'PDF + editable doc' },
+  { label: 'SOP prompt pack', format: 'Plain text prompts' },
+  { label: 'Starter tool stack', format: 'Reference sheet' },
+]
+
+const faqs = [
+  { q: 'Is this really free?', a: 'Yes. Enter your email and you get the full kit — no upsell, no paid tier.' },
+  { q: 'What format are the templates in?', a: 'Templates are provided as Google Docs and Notion pages. You can copy them into any tool you already use.' },
+  { q: 'Do I need technical skills to use this?', a: 'No. The kit is built for non-technical operators. Everything is plain-language and edit-ready.' },
+  { q: 'How long does it take to implement?', a: 'Most teams pick one workflow, adapt it, and run it with a real client within a week. Full implementation varies.' },
+  { q: 'What tools do I need?', a: 'None are required upfront. The starter tool stack is a recommendation, not a requirement. The templates work with whatever you currently use.' },
+]
+
 export default function ClientOnboardingAiChecklist() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -137,8 +159,23 @@ export default function ClientOnboardingAiChecklist() {
           </div>
         </section>
 
-        {/* Section 6 — Download CTA */}
+        {/* Section 6 — Expected Outcomes */}
         <section className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">What you&apos;ll get out of it</h2>
+            <ul className="flex flex-col gap-3 max-w-md" aria-label="Expected outcomes">
+              {expectedOutcomes.map((outcome) => (
+                <li key={outcome} className="flex items-start gap-3 text-sm text-gray-700">
+                  <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-gray-900 shrink-0" aria-hidden="true" />
+                  {outcome}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Section 7 — Download CTA */}
+        <section id="download-form" className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-20">
             <div className="max-w-md">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Free Download</p>
