@@ -130,8 +130,27 @@ export default function Newsletter() {
           </div>
         </section>
 
+        {/* Sample Issues */}
+        <section className="max-w-5xl mx-auto px-6 py-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">Sample issues</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="border-t-2 border-gray-900 pt-4">
+              <p className="text-sm font-semibold text-gray-900">Clean up client onboarding with one form and one prompt</p>
+            </div>
+            <div className="border-t-2 border-gray-900 pt-4">
+              <p className="text-sm font-semibold text-gray-900">A lean AI stack under $100/month</p>
+            </div>
+            <div className="border-t-2 border-gray-900 pt-4">
+              <p className="text-sm font-semibold text-gray-900">SOP drafting workflow for small teams</p>
+            </div>
+          </div>
+          <div className="mt-8">
+            <a href="#signup" className="text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors">Join now</a>
+          </div>
+        </section>
+
         {/* Signup form */}
-        <section className="max-w-5xl mx-auto px-6 py-20">
+        <section id="signup" className="max-w-5xl mx-auto px-6 py-20">
           <div className="max-w-md">
             <h2 className="text-2xl font-bold text-gray-900">Join the newsletter</h2>
             <p className="mt-2 text-sm text-gray-500">One email per week. Unsubscribe any time.</p>
