@@ -66,6 +66,16 @@ jobs:
             >> input/pipeline_context.md
 
           echo "" >> input/pipeline_context.md
+          echo "## All Sub-Issues (open and closed)" >> input/pipeline_context.md
+          gh issue list \
+            --repo ${{ github.repository }} \
+            --state all \
+            --label 'sub-issue' \
+            --json number,title,state,body \
+            --jq '.[] | "Sub-issue #\(.number): \(.title) | state: \(.state) | body_excerpt: \(.body[:200])"' \
+            >> input/pipeline_context.md
+
+          echo "" >> input/pipeline_context.md
           echo "## PR Comments (stuck PRs)" >> input/pipeline_context.md
           gh pr list \
             --repo ${{ github.repository }} \
@@ -115,7 +125,8 @@ jobs:
           STUCK pr_approved PR: has 'pr_approved' label AND no Unit Tests success run in last 30 min
           FAILED AI Teammate: workflow run shows 'failure' conclusion — check if it's rate limit or real error
           BLOCKED PR: has 'blocked' label — requires human, just report it
-          STALLED ISSUE: issue has 'tests-ready' + 'sub-issue' labels but no AI Teammate run in last hour
+          STALLED ISSUE: issue has 'tests-ready' + 'sub-issue' labels AND no open PR on branch feature/issue-{N} AND no AI Teammate run in last hour — this happens when the PR was manually closed without re-triggering the agent
+          ORPHAN PARENT: issue does NOT have 'sub-issue' label AND is open AND all issues that reference it as parent are closed — close the parent issue as completed
 
           ## Actions you can take
 
@@ -129,14 +140,32 @@ jobs:
           sleep 3
           gh pr edit PR_NUMBER --repo \$REPO --add-label 'pr_approved'
 
-          Re-trigger AI Teammate for an issue:
-          gh workflow run ai-teammate.yml --repo \$REPO --field issue_number=ISSUE_NUMBER
+          Re-trigger AI Teammate for an issue (use this for STALLED ISSUE — removes and re-adds tests-ready label):
+          gh issue edit ISSUE_NUMBER --repo \$REPO --remove-label 'tests-ready'
+          sleep 3
+          gh issue edit ISSUE_NUMBER --repo \$REPO --add-label 'tests-ready'
+
+          Close an orphan parent issue:
+          gh issue close ISSUE_NUMBER --repo \$REPO --reason completed
+          gh issue comment ISSUE_NUMBER --repo \$REPO --body 'MESSAGE'
 
           Comment on a PR explaining what you did:
           gh pr comment PR_NUMBER --repo \$REPO --body 'MESSAGE'
 
           Comment on an issue:
           gh issue comment ISSUE_NUMBER --repo \$REPO --body 'MESSAGE'
+
+          ## How to detect STALLED ISSUE
+          For each open issue with both 'tests-ready' and 'sub-issue' labels:
+          1. Check if there is an open PR with head branch 'feature/issue-{N}' (where N is the issue number)
+          2. Check if there is an AI Teammate workflow run for that issue in the last 60 min with status in_progress or success
+          3. If no open PR AND no recent run → it is stalled → re-trigger by removing and re-adding tests-ready label
+
+          ## How to detect ORPHAN PARENT
+          For each open issue WITHOUT 'sub-issue' label that has 'refined' or 'intake-done' label:
+          1. Use gh issue list to find open sub-issues that mention this issue number in their body or title
+          2. If all sub-issues are closed (none open) → close the parent as completed
+          To find sub-issues: gh issue list --repo \$REPO --state all --label 'sub-issue' --json number,title,state,body --jq '.[] | select(.body | contains("#PARENT_NUMBER"))'
 
           ## Rules
           - Only act on things that are genuinely stuck (>30 min with no progress)
