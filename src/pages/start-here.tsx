@@ -168,6 +168,32 @@ export default function StartHere() {
         </section>
       </main>
 
+      {/* Conversion block — 3 CTAs above footer */}
+      <section className="border-t border-gray-100">
+        <div className="max-w-5xl mx-auto px-6 py-12">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              href="/templates/client-onboarding-ai-checklist"
+              className="bg-gray-900 text-white px-5 py-2.5 rounded text-sm font-medium hover:bg-gray-700 transition-colors text-center"
+            >
+              Download the AI Ops Starter Kit
+            </Link>
+            <Link
+              href="/newsletter"
+              className="border border-gray-900 text-gray-900 px-5 py-2.5 rounded text-sm font-medium hover:bg-gray-50 transition-colors text-center"
+            >
+              Join the newsletter
+            </Link>
+            <Link
+              href="/services"
+              className="text-sm font-medium text-gray-700 underline underline-offset-2 hover:text-gray-500 transition-colors flex items-center justify-center sm:justify-start"
+            >
+              Join the audit waitlist
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <footer className="border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-gray-400">
           <span>AI Ops Agency</span>
