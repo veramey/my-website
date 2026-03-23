@@ -210,14 +210,23 @@ export default function ClientOnboardingAiChecklist() {
         {/* Block 8 — FAQ */}
         <section className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-16">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Frequently asked</h2>
-            <div className="flex flex-col gap-8 max-w-2xl">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">FAQ</p>
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-8">Common questions</h2>
+            <dl className="max-w-2xl">
               {faqs.map((faq) => (
-                <div key={faq.q}>
-                  <p className="text-sm font-semibold text-gray-900">{faq.q}</p>
-                  <p className="mt-2 text-sm text-gray-500 leading-relaxed">{faq.a}</p>
+                <div key={faq.q} className="border-t border-gray-100 py-5">
+                  <dt className="text-sm font-semibold text-gray-900 mb-1">{faq.q}</dt>
+                  <dd className="text-sm text-gray-500">{faq.a}</dd>
                 </div>
               ))}
+            </dl>
+            <div className="mt-8">
+              <a
+                href="#download-form"
+                className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start"
+              >
+                Download free
+              </a>
             </div>
           </div>
         </section>
@@ -238,7 +247,7 @@ export default function ClientOnboardingAiChecklist() {
           </div>
         </section>
 
-        {/* Section 7 — Download CTA */}
+        {/* Section 10 — Download CTA */}
         <section id="download-form" className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-20">
             <div className="max-w-md">
