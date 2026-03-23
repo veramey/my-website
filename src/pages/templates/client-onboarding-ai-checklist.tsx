@@ -162,7 +162,7 @@ export default function ClientOnboardingAiChecklist() {
         {/* Section 6 — Expected Outcomes */}
         <section className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-16">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">What you&apos;ll get out of it</h2>
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">After using this kit, you should be able to:</h2>
             <ul className="flex flex-col gap-3 max-w-md" aria-label="Expected outcomes">
               {expectedOutcomes.map((outcome) => (
                 <li key={outcome} className="flex items-start gap-3 text-sm text-gray-700">
@@ -171,6 +171,39 @@ export default function ClientOnboardingAiChecklist() {
                 </li>
               ))}
             </ul>
+            <a
+              href="#download-form"
+              className="mt-6 inline-block px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start"
+            >
+              Download free
+            </a>
+          </div>
+        </section>
+
+        {/* Block 7 — Asset Preview */}
+        <section className="border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">What&apos;s in the package</p>
+            <div className="grid md:grid-cols-2 gap-6 max-w-2xl">
+              {assetItems.map((item) => (
+                <div key={item.label} className="border-t-2 border-gray-900 pt-4">
+                  <p className="text-sm font-semibold text-gray-900">{item.label}</p>
+                  <p className="mt-1 text-sm text-gray-500">{item.format}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 max-w-xl space-y-3 text-sm text-gray-600">
+              <p>Ready to use in Notion, Google Docs, or any workspace</p>
+              <p>Most teams get their first workflow running in under an hour</p>
+            </div>
+            <div className="mt-8">
+              <a
+                href="#download-form"
+                className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start inline-block"
+              >
+                Get the full package
+              </a>
+            </div>
           </div>
         </section>
 
