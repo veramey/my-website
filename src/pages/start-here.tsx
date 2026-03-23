@@ -142,6 +142,33 @@ export default function StartHere() {
           </div>
         </section>
 
+        {/* Trust Filter — This site is / is not */}
+        <section className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">What to expect</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl">
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900 mb-4">This site is</h2>
+                <ul className="flex flex-col gap-3">
+                  <li className="text-sm text-gray-600"><span className="text-gray-500">✓</span> Practical AI ops for small agencies</li>
+                  <li className="text-sm text-gray-600"><span className="text-gray-500">✓</span> Implementation-focused guides and templates</li>
+                  <li className="text-sm text-gray-600"><span className="text-gray-500">✓</span> Honest tool recommendations and comparisons</li>
+                  <li className="text-sm text-gray-600"><span className="text-gray-500">✓</span> Built for 2–10 person service teams</li>
+                </ul>
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900 mb-4">This site is not</h2>
+                <ul className="flex flex-col gap-3">
+                  <li className="text-sm text-gray-600"><span className="text-gray-400">✗</span> An AI news or trend site</li>
+                  <li className="text-sm text-gray-600"><span className="text-gray-400">✗</span> Hype, predictions, or opinion pieces</li>
+                  <li className="text-sm text-gray-600"><span className="text-gray-400">✗</span> Built for enterprise or large teams</li>
+                  <li className="text-sm text-gray-600"><span className="text-gray-400">✗</span> Theory without practical application</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Block 5 — If You Want Done-for-You Implementation */}
         <section className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">If you want done-for-you</h2>
