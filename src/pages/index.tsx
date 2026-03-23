@@ -121,12 +121,24 @@ export default function Home() {
                 Start Here
               </Link>
               <Link
-                href="/guides"
+                href="/templates/client-onboarding-ai-checklist"
                 className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded hover:border-gray-500 transition-colors"
               >
-                Browse Guides
+                Download the starter kit
               </Link>
             </div>
+            <ul className="mt-6 space-y-2">
+              {[
+                'No hype — only practical systems',
+                'Built for small teams, not enterprise',
+                'Guides, templates, and tool stacks you can use this week',
+              ].map((bullet) => (
+                <li key={bullet} className="flex items-start gap-2 text-sm text-gray-500">
+                  <span className="mt-0.5 text-gray-300" aria-hidden="true">—</span>
+                  {bullet}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
