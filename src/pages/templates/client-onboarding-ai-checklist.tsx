@@ -180,6 +180,33 @@ export default function ClientOnboardingAiChecklist() {
           </div>
         </section>
 
+        {/* Block 7 — Asset Preview */}
+        <section className="border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">What&apos;s in the package</p>
+            <div className="grid md:grid-cols-2 gap-6 max-w-2xl">
+              {assetItems.map((item) => (
+                <div key={item.label} className="border-t-2 border-gray-900 pt-4">
+                  <p className="text-sm font-semibold text-gray-900">{item.label}</p>
+                  <p className="mt-1 text-sm text-gray-500">{item.format}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 max-w-xl space-y-3 text-sm text-gray-600">
+              <p>Ready to use in Notion, Google Docs, or any workspace</p>
+              <p>Most teams get their first workflow running in under an hour</p>
+            </div>
+            <div className="mt-8">
+              <a
+                href="#download-form"
+                className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start inline-block"
+              >
+                Get the full package
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* Section 7 — Download CTA */}
         <section id="download-form" className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-20">
