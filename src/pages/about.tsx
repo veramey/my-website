@@ -79,6 +79,32 @@ export default function About() {
             </section>
           </div>
         </div>
+
+        {/* Section 4 — What You'll Find Here */}
+        <div className="border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <section>
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">What You&apos;ll Find Here</h2>
+              <div className="max-w-2xl">
+                <ul className="space-y-3">
+                  <li>
+                    <Link href="/guides" className="font-medium text-gray-900 hover:underline">Guides</Link>
+                  </li>
+                  <li>
+                    <Link href="/tools" className="font-medium text-gray-900 hover:underline">Tool roundups</Link>
+                  </li>
+                  <li>
+                    <Link href="/templates" className="font-medium text-gray-900 hover:underline">Templates</Link>
+                  </li>
+                  <li>
+                    <Link href="/newsletter" className="font-medium text-gray-900 hover:underline">Newsletter</Link>
+                  </li>
+                </ul>
+                <Link href="/guides" className="inline-block mt-6 text-sm font-medium text-gray-900 underline hover:no-underline">Browse resources →</Link>
+              </div>
+            </section>
+          </div>
+        </div>
       </main>
 
       <footer className="border-t border-gray-100">
