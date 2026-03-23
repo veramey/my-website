@@ -72,6 +72,28 @@ const pillars = [
   },
 ]
 
+const whoItIsFor = {
+  for: [
+    'Small agencies (2–10 people)',
+    'Boutique studios and service businesses',
+    'Operators who want systems, not theory',
+    'Teams that want practical implementation',
+  ],
+  notFor: [
+    'Enterprise teams with dedicated ops staff',
+    'Those looking for AI news and trends',
+    'Teams not ready to change how they work',
+    'Businesses wanting hype over substance',
+  ],
+}
+
+const coreProblems: string[] = [
+  'Messy onboarding',
+  'Inconsistent delivery',
+  'Undocumented processes',
+  'Too much admin work',
+]
+
 const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
 const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
 
@@ -148,6 +170,51 @@ export default function Home() {
                 <li key={bullet} className="flex items-start gap-2 text-sm text-gray-500">
                   <span className="mt-0.5 text-gray-300" aria-hidden="true">—</span>
                   {bullet}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Who It's For block */}
+        <section className="border-t border-gray-100 bg-white">
+          <div className="max-w-5xl mx-auto px-6 py-14">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Who It&apos;s For</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-4">For</h3>
+                <ul className="space-y-2">
+                  {whoItIsFor.for.map((item) => (
+                    <li key={item} className="text-sm text-gray-600 flex items-start gap-2">
+                      <span className="mt-0.5 text-gray-400">—</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-4">Not For</h3>
+                <ul className="space-y-2">
+                  {whoItIsFor.notFor.map((item) => (
+                    <li key={item} className="text-sm text-gray-600 flex items-start gap-2">
+                      <span className="mt-0.5 text-gray-400">—</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Core Problem block */}
+        <section className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-14">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">The Problem</h2>
+            <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {coreProblems.map((problem) => (
+                <li key={problem} className="bg-white border border-gray-100 rounded-lg px-5 py-4 text-sm font-medium text-gray-800">
+                  {problem}
                 </li>
               ))}
             </ul>
