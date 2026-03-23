@@ -106,7 +106,7 @@ export default function About() {
                     <Link href="/newsletter" className="font-medium text-gray-900 hover:underline">Newsletter</Link>
                   </li>
                 </ul>
-                <Link href="/guides" className="inline-block mt-6 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">Browse all guides →</Link>
+                <Link href="/guides" className="inline-block mt-6 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">Browse resources →</Link>
               </div>
             </section>
           </div>
