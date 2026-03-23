@@ -83,6 +83,23 @@ export default function GuidesIndex() {
             ))}
           </div>
         )}
+        <section className="mt-16 border-t border-gray-100 pt-12">
+          <h2 className="text-sm font-semibold text-gray-900 tracking-tight">Coming next</h2>
+          <ul className="mt-4 space-y-2">
+            <li className="text-sm text-gray-500">Proposal workflow guide</li>
+            <li className="text-sm text-gray-500">SOP writing workflow guide</li>
+            <li className="text-sm text-gray-500">Internal reporting system guide</li>
+            <li className="text-sm text-gray-500">Client follow-up automation guide</li>
+          </ul>
+          <div className="mt-6">
+            <Link
+              href="/newsletter"
+              className="text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors"
+            >
+              Join newsletter for new guides
+            </Link>
+          </div>
+        </section>
       </main>
     </>
   )
