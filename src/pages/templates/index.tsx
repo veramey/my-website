@@ -83,6 +83,26 @@ export default function TemplatesIndex() {
             </div>
           </div>
         </section>
+
+        <section className="border-t border-gray-100">
+          <div className="py-14">
+            <h2 className="text-xl font-semibold text-gray-900 tracking-tight">Coming soon</h2>
+            <ul className="mt-4 space-y-2">
+              <li className="text-sm text-gray-500">Proposal workflow template</li>
+              <li className="text-sm text-gray-500">Kickoff agenda template</li>
+              <li className="text-sm text-gray-500">SOP drafting prompt pack</li>
+              <li className="text-sm text-gray-500">Client follow-up template</li>
+            </ul>
+            <div className="mt-6">
+              <Link
+                href="/newsletter"
+                className="text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors"
+              >
+                Join newsletter for new templates
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
     </>
   )
