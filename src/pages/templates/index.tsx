@@ -55,6 +55,34 @@ export default function TemplatesIndex() {
             ))}
           </div>
         </div>
+
+        <section className="border-t border-gray-100">
+          <div className="py-14">
+            <h2 className="text-xl font-semibold text-gray-900 tracking-tight">Why templates matter</h2>
+            <ul className="mt-6 space-y-4">
+              <li className="flex gap-3">
+                <span className="mt-0.5 text-gray-400" aria-hidden="true">—</span>
+                <span className="text-sm text-gray-600">Remove blank-page work — start from a working structure, not from zero</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-0.5 text-gray-400" aria-hidden="true">—</span>
+                <span className="text-sm text-gray-600">Standardize repeated tasks — every client gets the same quality experience</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-0.5 text-gray-400" aria-hidden="true">—</span>
+                <span className="text-sm text-gray-600">Implement faster — spend time adapting, not building from scratch</span>
+              </li>
+            </ul>
+            <div className="mt-8">
+              <Link
+                href="/templates/client-onboarding-ai-checklist"
+                className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700"
+              >
+                Get the starter kit
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
     </>
   )
