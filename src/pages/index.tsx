@@ -139,6 +139,29 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Core Problem — Where small agencies lose time */}
+        <section className="max-w-5xl mx-auto px-6 py-16">
+          <h2 className="text-2xl font-bold text-gray-900 leading-snug">Where small agencies lose time</h2>
+          <p className="mt-4 text-gray-600 text-base leading-relaxed max-w-2xl">
+            Most small agencies don&apos;t have an AI problem — they have a systems problem. Onboarding is inconsistent, SOPs live in people&apos;s heads, follow-ups are manual, and tools get added without a workflow behind them. This site helps fix that with practical systems.
+          </p>
+          <div className="mt-8 grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {['Messy onboarding', 'Inconsistent delivery', 'Undocumented processes', 'Too much admin work'].map((label) => (
+              <div key={label} className="border border-gray-200 rounded-lg p-5">
+                <p className="text-sm font-medium text-gray-800">{label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8">
+            <Link
+              href="/guides/automate-client-onboarding-small-agency"
+              className="text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors"
+            >
+              Read the onboarding guide
+            </Link>
+          </div>
+        </section>
+
         {/* Block 3 — Content Highlights */}
         <section className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Featured</h2>
