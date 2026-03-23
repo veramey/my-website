@@ -1,0 +1,164 @@
+name: Merge Conflict Resolver
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: conflict-resolver
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout with full history
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Resolve conflicting PRs
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Wait for GitHub to compute mergeability after a push
+          sleep 20
+
+          git config user.email "conflict-resolver@github-actions"
+          git config user.name "Conflict Resolver"
+
+          # Find all CONFLICTING open PRs on feature/* branches
+          CONFLICTING=$(gh pr list --repo "$REPO" --state open \
+            --json number,headRefName,mergeable \
+            --jq '.[] | select(.mergeable == "CONFLICTING") | select(.headRefName | startswith("feature/")) | .number')
+
+          if [ -z "$CONFLICTING" ]; then
+            echo "✓ No conflicting PRs — nothing to do."
+            exit 0
+          fi
+
+          echo "Conflicting PRs: $CONFLICTING"
+
+          for PR_NUM in $CONFLICTING; do
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "Processing PR #$PR_NUM"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            BRANCH=$(gh pr view "$PR_NUM" --repo "$REPO" --json headRefName --jq '.headRefName')
+            echo "Branch: $BRANCH"
+
+            git fetch origin main "$BRANCH" --quiet
+
+            # ── Strategy 1: simple rebase ──────────────────────────────────
+            git checkout -b "work/$PR_NUM" "origin/$BRANCH" --quiet
+
+            if git rebase origin/main --quiet 2>/dev/null; then
+              echo "✓ Strategy 1 (rebase) succeeded"
+              git push origin "HEAD:$BRANCH" --force-with-lease --quiet
+              gh pr comment "$PR_NUM" --repo "$REPO" \
+                --body "🤖 **Conflict auto-resolved** (strategy: rebase onto main). No manual action needed."
+              git checkout main --quiet
+              git branch -D "work/$PR_NUM" --quiet
+              continue
+            fi
+
+            git rebase --abort 2>/dev/null || true
+            git checkout main --quiet
+            git branch -D "work/$PR_NUM" --quiet
+
+            # ── Strategy 2: cherry-pick unique commits ─────────────────────
+            # Handles the common case where the branch includes upstream commits
+            # that were already squash-merged into main with different hashes.
+            UNIQUE_COMMITS=$(git log --oneline "origin/main..origin/$BRANCH" \
+              --reverse | awk '{print $1}')
+            UNIQUE_COUNT=$(echo "$UNIQUE_COMMITS" | grep -c . || true)
+
+            echo "Unique commits on branch: $UNIQUE_COUNT"
+
+            git checkout -b "work/$PR_NUM" origin/main --quiet
+            CHERRY_OK=true
+
+            for COMMIT in $UNIQUE_COMMITS; do
+              if ! git cherry-pick "$COMMIT" --quiet 2>/dev/null; then
+                git cherry-pick --abort 2>/dev/null || true
+                CHERRY_OK=false
+                break
+              fi
+            done
+
+            if [ "$CHERRY_OK" = "true" ]; then
+              echo "✓ Strategy 2 (cherry-pick unique commits) succeeded"
+              git push origin "HEAD:$BRANCH" --force-with-lease --quiet
+              gh pr comment "$PR_NUM" --repo "$REPO" \
+                --body "🤖 **Conflict auto-resolved** (strategy: cherry-pick unique commits). Branch had stale upstream commits already in main — rebuilt with only the feature-specific commits."
+              git checkout main --quiet
+              git branch -D "work/$PR_NUM" --quiet
+              continue
+            fi
+
+            git checkout main --quiet
+            git branch -D "work/$PR_NUM" --quiet
+
+            # ── Strategy 3: Claude resolves conflict markers ───────────────
+            echo "Strategies 1 & 2 failed — using Claude to resolve markers"
+
+            git checkout -b "work/$PR_NUM" "origin/$BRANCH" --quiet
+            git rebase origin/main 2>/dev/null || true  # leaves conflict markers
+
+            CONFLICTED=$(git diff --name-only --diff-filter=U | tr '\n' ' ')
+            echo "Conflicted files: $CONFLICTED"
+
+            claude --dangerously-skip-permissions -p "
+          You are a merge conflict resolver. A git rebase is paused mid-way with conflict markers.
+
+          Conflicted files: $CONFLICTED
+
+          For each conflicted file:
+          1. Read the file — it contains <<<<<<< HEAD, =======, and >>>>>>> markers.
+          2. Understand what the HEAD (main branch) version has and what the incoming commit adds.
+          3. Produce a clean merge:
+             - Keep ALL content from both sides.
+             - If both sides add different blocks of code, include both blocks.
+             - If both sides modify the same variable/function, merge intelligently (prefer the more complete version, do not lose features from either side).
+             - Remove all conflict marker lines (<<<<<<, =======, >>>>>>>).
+          4. Write the resolved file using the Edit or Write tool.
+          5. Run: git add <file>
+
+          After ALL files are resolved and staged, run: GIT_EDITOR=true git rebase --continue
+
+          Do NOT push. Do NOT create commits manually. Just resolve, stage, and continue the rebase.
+          "
+
+            # Check if rebase completed (no more conflict markers)
+            STILL_CONFLICTED=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+
+            if [ -z "$STILL_CONFLICTED" ] && git log "origin/main..HEAD" --oneline | grep -q .; then
+              echo "✓ Strategy 3 (Claude) succeeded"
+              git push origin "HEAD:$BRANCH" --force-with-lease --quiet
+              gh pr comment "$PR_NUM" --repo "$REPO" \
+                --body "🤖 **Conflict auto-resolved** (strategy: Claude merge). Genuine conflict in \`$CONFLICTED\` — both sides integrated. Please review the diff before merging."
+            else
+              echo "✗ All strategies failed — flagging for human review"
+              gh pr comment "$PR_NUM" --repo "$REPO" \
+                --body "⚠️ **Auto-resolution failed** — conflict in \`$CONFLICTED\` could not be resolved automatically. Manual review required."
+              gh pr edit "$PR_NUM" --repo "$REPO" --add-label "blocked" 2>/dev/null || true
+            fi
+
+            git rebase --abort 2>/dev/null || true
+            git checkout main --quiet
+            git branch -D "work/$PR_NUM" --quiet 2>/dev/null || true
+          done
