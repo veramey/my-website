@@ -86,7 +86,13 @@ export default function About() {
             <section>
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">What You&apos;ll Find Here</h2>
               <div className="max-w-2xl">
-                <ul className="space-y-3">
+                <p className="text-base text-gray-600 leading-relaxed">
+                  Guides, tools, and templates built around one question: what actually helps a small agency run better? Every piece of content is scoped to teams of 2–10 people and written to give you something you can use today.
+                </p>
+                <p className="mt-4 text-base text-gray-600 leading-relaxed">
+                  No sponsored roundups. No tool-of-the-week takes. Just the workflows, stacks, and systems worth your time.
+                </p>
+                <ul className="mt-4 space-y-3">
                   <li>
                     <Link href="/guides" className="font-medium text-gray-900 hover:underline">Guides</Link>
                   </li>
@@ -100,8 +106,31 @@ export default function About() {
                     <Link href="/newsletter" className="font-medium text-gray-900 hover:underline">Newsletter</Link>
                   </li>
                 </ul>
-                <Link href="/guides" className="inline-block mt-6 text-sm font-medium text-gray-900 underline hover:no-underline">Browse resources →</Link>
+                <Link href="/guides" className="inline-block mt-6 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">Browse all guides →</Link>
               </div>
+            </section>
+          </div>
+        </div>
+
+        {/* Section 5 — Why This Approach Works */}
+        <div className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Why This Approach Works</h2>
+              <ul className="max-w-2xl space-y-3">
+                <li className="text-base text-gray-600 leading-relaxed">
+                  <span className="font-medium text-gray-900">Practical, no-fluff content.</span> — content that skips the hype and gets straight to implementation
+                </li>
+                <li className="text-base text-gray-600 leading-relaxed">
+                  <span className="font-medium text-gray-900">Built for lean teams, not enterprise.</span> — everything here is sized for 2–10 person agencies
+                </li>
+                <li className="text-base text-gray-600 leading-relaxed">
+                  <span className="font-medium text-gray-900">Implementation-first — every piece has a next action.</span> — no theory without a takeaway
+                </li>
+              </ul>
+              <Link href="/templates/client-onboarding-ai-checklist" className="inline-block mt-6 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
+                Download the starter kit →
+              </Link>
             </section>
           </div>
         </div>

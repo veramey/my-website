@@ -13,7 +13,20 @@ const benefits = [
   { label: 'No hype, no AI spam', description: 'Only content that earns your attention.' },
 ]
 
-export default function Newsletter() {
+async function submitToTelegram(email: string) {
+  const text = `📧 New newsletter subscriber (newsletter page):\n${email}`
+  const params = new URLSearchParams({ chat_id: TELEGRAM_CHAT_ID!, text })
+  const res = await fetch(
+    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+    { method: 'POST', body: params }
+  )
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(JSON.stringify(err))
+  }
+}
+
+function NewsletterForm({ inputId, buttonLabel }: { inputId: string; buttonLabel: string }) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
@@ -21,16 +34,7 @@ export default function Newsletter() {
     e.preventDefault()
     setStatus('loading')
     try {
-      const text = `📧 New newsletter subscriber (newsletter page):\n${email}`
-      const params = new URLSearchParams({ chat_id: TELEGRAM_CHAT_ID!, text })
-      const res = await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-        { method: 'POST', body: params }
-      )
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(JSON.stringify(err))
-      }
+      await submitToTelegram(email)
       setStatus('success')
       setEmail('')
     } catch (err) {
@@ -39,6 +43,50 @@ export default function Newsletter() {
     }
   }
 
+  if (status === 'success') {
+    return (
+      <div className="mt-8 p-5 bg-gray-50 border border-gray-200 rounded-lg">
+        <p className="text-sm font-semibold text-gray-900">You&apos;re in.</p>
+        <p className="mt-1 text-sm text-gray-500">Thanks for subscribing. First issue coming your way soon.</p>
+      </div>
+    )
+  }
+
+  return (
+    <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor={inputId} className="text-sm font-medium text-gray-700">
+          Email address
+        </label>
+        <input
+          id={inputId}
+          type="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value)
+            if (status === 'error') setStatus('idle')
+          }}
+          placeholder="your@email.com"
+          required
+          disabled={status === 'loading'}
+          className="px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start disabled:opacity-50"
+      >
+        {status === 'loading' ? 'Sending…' : buttonLabel}
+      </button>
+      {status === 'error' && (
+        <p className="text-xs text-red-500">Something went wrong — try again.</p>
+      )}
+    </form>
+  )
+}
+
+export default function Newsletter() {
   return (
     <>
       <Head>
@@ -101,46 +149,30 @@ export default function Newsletter() {
           </div>
         </section>
 
+        {/* Who It's For */}
+        <section className="bg-gray-50 border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Who it&apos;s for</h2>
+            <p className="text-base text-gray-700 max-w-2xl">This newsletter is for small agencies, operators, and service teams that want more leverage and less noise.</p>
+          </div>
+        </section>
+
         {/* Signup form */}
         <section id="signup" className="max-w-5xl mx-auto px-6 py-20">
           <div className="max-w-md">
             <h2 className="text-2xl font-bold text-gray-900">Join the newsletter</h2>
             <p className="mt-2 text-sm text-gray-500">One email per week. Unsubscribe any time.</p>
+            <NewsletterForm inputId="email" buttonLabel="Join the newsletter" />
+          </div>
+        </section>
 
-            {status === 'success' ? (
-              <div className="mt-8 p-5 bg-gray-50 border border-gray-200 rounded-lg">
-                <p className="text-sm font-semibold text-gray-900">You&apos;re in.</p>
-                <p className="mt-1 text-sm text-gray-500">Thanks for subscribing. First issue coming your way soon.</p>
-              </div>
-            ) : (
-              <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit}>
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Email address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    required
-                    disabled={status === 'loading'}
-                    className="px-4 py-2.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-gray-400"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={status === 'loading'}
-                  className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-700 transition-colors self-start disabled:opacity-50"
-                >
-                  {status === 'loading' ? 'Sending…' : 'Join the newsletter'}
-                </button>
-                {status === 'error' && (
-                  <p className="text-xs text-red-500">Something went wrong — try again.</p>
-                )}
-              </form>
-            )}
+        {/* Final CTA */}
+        <section className="bg-gray-50 border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-20">
+            <div className="max-w-md">
+              <h2 className="text-2xl font-bold text-gray-900">Get one useful AI ops idea per week</h2>
+              <NewsletterForm inputId="email-cta" buttonLabel="Subscribe" />
+            </div>
           </div>
         </section>
       </main>
