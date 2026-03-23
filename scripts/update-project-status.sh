@@ -53,26 +53,24 @@ if [ -z "$OPTION_ID" ] || [ "$OPTION_ID" = "null" ]; then
   exit 0
 fi
 
-# Get issue node ID
-ISSUE_NODE_ID=$(gh issue view "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --json id --jq '.id')
-
-# Get item ID in project
-ITEM_ID=$(gh api graphql -f query='
-  query($projectId: ID!) {
-    node(id: $projectId) {
-      ... on ProjectV2 {
-        items(first: 100) {
+# Get issue node ID and its project item ID in one query
+ISSUE_DATA=$(gh api graphql -f query='
+  query($owner: String!, $repo: String!, $number: Int!) {
+    repository(owner: $owner, name: $repo) {
+      issue(number: $number) {
+        id
+        projectItems(first: 10) {
           nodes {
             id
-            content {
-              ... on Issue { id }
-            }
+            project { id }
           }
         }
       }
     }
   }
-' -f projectId="$PROJECT_ID" | jq -r --arg issue_id "$ISSUE_NODE_ID" '.data.node.items.nodes[] | select(.content.id == $issue_id) | .id')
+' -f owner="$OWNER" -f repo="${GITHUB_REPOSITORY#*/}" -F number="$ISSUE_NUMBER")
+
+ITEM_ID=$(echo "$ISSUE_DATA" | jq -r --arg pid "$PROJECT_ID" '.data.repository.issue.projectItems.nodes[] | select(.project.id == $pid) | .id')
 
 if [ -z "$ITEM_ID" ] || [ "$ITEM_ID" = "null" ]; then
   echo "⚠️ Issue #$ISSUE_NUMBER not found in project — skipping"
