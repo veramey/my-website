@@ -52,42 +52,16 @@ export default function SevenWorkflowsAutomateSmallAgency() {
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">1. Client Onboarding &mdash; Intake Form to Kickoff Workflow</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The problem:</strong> Every new client means the same manual scramble &mdash; sending intake questions via email, chasing responses, copying answers into a brief, prepping a kickoff agenda, and writing a welcome email. It eats 2&ndash;4 hours per client.
+              Every new client triggers the same manual scramble: chasing intake info, building a brief from scratch, prepping a kickoff agenda, writing a welcome email. The full sequence eats 2&ndash;4 hours per client. With a structured intake form connected to an AI drafting step and a workspace automation, that drops to 20 minutes. The tools: Tally or Typeform for intake, Make or Zapier to route the data, Claude to generate the brief and agenda, Notion to hold the output.
             </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The manual version:</strong> Someone on the team sends a PDF or Google Doc with intake questions, waits for a reply, manually builds a project brief, creates a kickoff doc from scratch, and types out a welcome email with next steps.
-            </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The automated version:</strong> A Typeform or Tally intake form triggers a Zapier/Make workflow on submission. The form data is passed to Claude or GPT-4o with a prompt that generates a structured project brief, a kickoff agenda, and a draft welcome email. These outputs land in your Notion or ClickUp workspace automatically. You review, tweak, and send &mdash; total time drops to 20 minutes.
-            </p>
-            <aside className="bg-gray-50 border border-gray-100 rounded-lg p-5 mt-5">
-              <h3 className="text-base font-medium text-gray-900">Tools needed</h3>
-              <ul className="mt-2 text-sm text-gray-600 space-y-1 leading-relaxed">
-                <li><span className="font-medium">Typeform or Tally</span> &mdash; structured intake form with conditional logic</li>
-                <li><span className="font-medium">Zapier or Make</span> &mdash; connect form submission to AI processing and workspace</li>
-                <li><span className="font-medium">Claude or ChatGPT</span> &mdash; generate brief, agenda, and welcome email from intake data</li>
-                <li><span className="font-medium">Notion or ClickUp</span> &mdash; destination for auto-created project workspace</li>
-              </ul>
-            </aside>
             <p className="mt-3 text-sm text-gray-500">
-              <strong>Time saved:</strong> 2&ndash;3 hours per new client.
-            </p>
-            <p className="mt-4 text-sm text-gray-500">
-              For a full walkthrough, see{' '}
+              <strong>Time saved:</strong> 2&ndash;3 hours per new client. &nbsp;
               <Link
                 href="/guides/automate-client-onboarding-small-agency"
                 className="text-blue-600 hover:text-blue-700 underline"
               >
-                how to automate client onboarding for a small agency
+                Full step-by-step walkthrough →
               </Link>
-              , or grab the{' '}
-              <Link
-                href="/templates/client-onboarding-ai-checklist"
-                className="text-blue-600 hover:text-blue-700 underline"
-              >
-                client onboarding AI checklist
-              </Link>
-              .
             </p>
           </section>
 
@@ -95,35 +69,16 @@ export default function SevenWorkflowsAutomateSmallAgency() {
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">2. Meeting Follow-Ups &mdash; Transcript to Action Items to Email</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The problem:</strong> After every client call or internal meeting, someone spends 30&ndash;45 minutes writing up notes, extracting action items, and sending a follow-up email. Multiply that by 8&ndash;12 meetings a week and you&apos;re losing a full day.
+              Agencies run on calls. Processing them manually — writing up notes, extracting action items, drafting follow-up emails — takes 30&ndash;45 minutes per call. Multiply by 8&ndash;12 meetings a week and you&apos;re losing a full day. An AI meeting assistant (Fathom, Fireflies, or Otter) joins the call automatically, transcribes it, and generates a structured summary. You pass the summary to Claude with a prompt that extracts decisions, action items, and a draft follow-up email. The email goes out within 15 minutes of the call ending.
             </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The manual version:</strong> Someone takes notes during the call (and misses half of it), then writes a summary from memory, creates tasks in the project tool, and drafts a follow-up email. It happens hours &mdash; sometimes days &mdash; after the call.
-            </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The automated version:</strong> An AI meeting assistant (Fireflies, Otter, or Fathom) joins the call, transcribes it, and generates a structured summary. You feed that summary to Claude with a prompt that extracts: decisions made, action items with owners, open questions, and a draft follow-up email. The email goes out within 15 minutes of the call ending.
-            </p>
-            <aside className="bg-gray-50 border border-gray-100 rounded-lg p-5 mt-5">
-              <h3 className="text-base font-medium text-gray-900">Tools needed</h3>
-              <ul className="mt-2 text-sm text-gray-600 space-y-1 leading-relaxed">
-                <li><span className="font-medium">Fireflies.ai</span> &mdash; transcription, summaries, searchable meeting library, strong Zapier integration</li>
-                <li><span className="font-medium">Otter.ai</span> &mdash; accurate transcription with real-time collaboration on notes</li>
-                <li><span className="font-medium">Fathom</span> &mdash; free tier that genuinely works; minimal setup overhead</li>
-                <li><span className="font-medium">Claude or ChatGPT</span> &mdash; extract action items and draft follow-up emails from transcripts</li>
-              </ul>
-            </aside>
             <p className="mt-3 text-sm text-gray-500">
-              <strong>Time saved:</strong> 3&ndash;5 hours per week across a typical agency meeting load.
-            </p>
-            <p className="mt-4 text-sm text-gray-500">
-              See the full comparison in{' '}
+              <strong>Time saved:</strong> 3&ndash;5 hours per week. &nbsp;
               <Link
                 href="/tools/best-ai-meeting-assistants-agencies"
                 className="text-blue-600 hover:text-blue-700 underline"
               >
-                best AI meeting assistants for agencies
+                Full tool comparison →
               </Link>
-              .
             </p>
           </section>
 
@@ -131,25 +86,16 @@ export default function SevenWorkflowsAutomateSmallAgency() {
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">3. Proposal Creation &mdash; Discovery Call to Draft Proposal</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The problem:</strong> Writing proposals from scratch after every discovery call is one of the biggest time sinks in agency life. Each proposal takes 2&ndash;4 hours, and most of the structure is the same every time.
+              Each proposal takes 2&ndash;4 hours when you write from scratch — and most of the structure is the same every time. The five-step workflow: record the discovery call, extract key info with a structured prompt, generate a proposal draft from extraction output, review and personalize, send same-day. Tools: Fathom or Fireflies for transcription, Claude for extraction and drafting, your existing proposal template for structure. Total active time drops to under 45 minutes.
             </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The manual version:</strong> After a discovery call, you open a Google Doc, copy your last proposal, manually rewrite the scope, objectives, and pricing sections, and spend an hour formatting. Then you send it and hope you remembered everything the client said.
-            </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The automated version:</strong> Your meeting assistant transcribes the discovery call. You pass the transcript plus your proposal template to Claude with a prompt like: &ldquo;Using this call transcript and proposal template, draft a proposal for this client. Include: project overview, scope of work, deliverables, timeline, and pricing based on [your rate structure].&rdquo; The output gives you an 80% complete draft in under 5 minutes. You review, adjust pricing, add specifics, and send.
-            </p>
-            <aside className="bg-gray-50 border border-gray-100 rounded-lg p-5 mt-5">
-              <h3 className="text-base font-medium text-gray-900">Tools needed</h3>
-              <ul className="mt-2 text-sm text-gray-600 space-y-1 leading-relaxed">
-                <li><span className="font-medium">Fireflies or Fathom</span> &mdash; capture the discovery call transcript</li>
-                <li><span className="font-medium">Claude</span> &mdash; best for long-form structured output like proposals; handles multi-section documents well</li>
-                <li><span className="font-medium">Google Docs or Notion</span> &mdash; store your proposal template and finalize the draft</li>
-                <li><span className="font-medium">PandaDoc or Qwilr</span> &mdash; optional; professional formatting and e-signatures if your volume justifies it</li>
-              </ul>
-            </aside>
             <p className="mt-3 text-sm text-gray-500">
-              <strong>Time saved:</strong> 1.5&ndash;3 hours per proposal.
+              <strong>Time saved:</strong> 1.5&ndash;3 hours per proposal. &nbsp;
+              <Link
+                href="/guides/discovery-call-to-proposal-workflow-agency"
+                className="text-blue-600 hover:text-blue-700 underline"
+              >
+                Full workflow with copy-paste prompts →
+              </Link>
             </p>
           </section>
 
@@ -183,25 +129,16 @@ export default function SevenWorkflowsAutomateSmallAgency() {
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">5. SOP Documentation &mdash; Process to Written SOP</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The problem:</strong> Every small agency has processes that live in people&apos;s heads. When someone&apos;s out sick or a new person joins, the knowledge gap shows immediately. Writing SOPs feels important but never urgent &mdash; so it doesn&apos;t happen.
+              Every small agency has processes that live in people&apos;s heads. Writing SOPs manually takes 1&ndash;2 hours each and never feels urgent enough to prioritize. The shortcut: record a 5-minute Loom walkthrough of the process, transcribe it, and pass the transcript to Claude with an SOP-generation prompt. Output: a clean, structured SOP in under 15 minutes. Store it in Notion or Slite with consistent naming, and your team can search for it later.
             </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The manual version:</strong> Someone sits down and writes a multi-page document from memory, trying to capture every step of a process. It takes 1&ndash;2 hours per SOP, the formatting is inconsistent, and by the time it&apos;s written, parts are already outdated.
-            </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <strong>The automated version:</strong> Record a Loom video of yourself doing the process (5&ndash;10 minutes). Transcribe it with Fireflies or Otter. Pass the transcript to Claude with a prompt: &ldquo;Turn this process walkthrough into a step-by-step SOP. Include: purpose, prerequisites, numbered steps with sub-steps, common mistakes, and who to contact if it breaks.&rdquo; You get a clean, structured SOP in under 15 minutes &mdash; one you can paste directly into Notion or your internal wiki.
-            </p>
-            <aside className="bg-gray-50 border border-gray-100 rounded-lg p-5 mt-5">
-              <h3 className="text-base font-medium text-gray-900">Tools needed</h3>
-              <ul className="mt-2 text-sm text-gray-600 space-y-1 leading-relaxed">
-                <li><span className="font-medium">Loom</span> &mdash; record yourself walking through the process (screen + voice)</li>
-                <li><span className="font-medium">Fireflies or Otter</span> &mdash; transcribe the recording into text</li>
-                <li><span className="font-medium">Claude</span> &mdash; convert the transcript into a structured, formatted SOP</li>
-                <li><span className="font-medium">Notion or Slite</span> &mdash; store and organize your SOP library with search and tagging</li>
-              </ul>
-            </aside>
             <p className="mt-3 text-sm text-gray-500">
-              <strong>Time saved:</strong> 1&ndash;1.5 hours per SOP, and you&apos;ll actually write them instead of putting it off.
+              <strong>Time saved:</strong> 1&ndash;1.5 hours per SOP. &nbsp;
+              <Link
+                href="/tools/best-ai-tools-sops-small-agencies"
+                className="text-blue-600 hover:text-blue-700 underline"
+              >
+                Best SOP tools for agencies →
+              </Link>
             </p>
           </section>
 

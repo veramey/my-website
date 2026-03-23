@@ -80,21 +80,6 @@ const pillars = [
   },
 ]
 
-const whoItIsFor = {
-  for: [
-    'Small agencies (2–10 people)',
-    'Boutique studios and service businesses',
-    'Operators who want systems, not theory',
-    'Teams that want practical implementation',
-  ],
-  notFor: [
-    'Enterprise teams with dedicated ops staff',
-    'Those looking for AI news and trends',
-    'Teams not ready to change how they work',
-    'Businesses wanting hype over substance',
-  ],
-}
-
 
 const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
 const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
@@ -163,58 +148,6 @@ export default function Home() {
                 Download the starter kit
               </Link>
             </div>
-            <ul className="mt-6 space-y-2">
-              {[
-                'No AI hype or news',
-                'Implementation-ready systems',
-                'Built for 2–10-person teams',
-              ].map((bullet) => (
-                <li key={bullet} className="flex items-start gap-2 text-sm text-gray-500">
-                  <span className="mt-0.5 text-gray-300" aria-hidden="true">—</span>
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* Who It's For block */}
-        <section className="border-t border-gray-100 bg-white">
-          <div className="max-w-5xl mx-auto px-6 py-14">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Who It&apos;s For</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">For</h3>
-                <ul className="space-y-2">
-                  {whoItIsFor.for.map((item) => (
-                    <li key={item} className="text-sm text-gray-600 flex items-start gap-2">
-                      <span className="mt-0.5 text-gray-400">—</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">Not For</h3>
-                <ul className="space-y-2">
-                  {whoItIsFor.notFor.map((item) => (
-                    <li key={item} className="text-sm text-gray-600 flex items-start gap-2">
-                      <span className="mt-0.5 text-gray-400">—</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Block 2 — Position Statement */}
-        <section className="border-t border-gray-100 bg-gray-50">
-          <div className="max-w-5xl mx-auto px-6 py-14">
-            <p className="text-gray-700 text-base leading-relaxed max-w-2xl">
-              This site is for small agencies and service teams — 2 to 10 people — who want to use AI to run leaner operations without drowning in hype. You get practical systems for onboarding, delivery, documentation, and tools. No AI news. No speculation. Only implementation.
-            </p>
           </div>
         </section>
 
@@ -323,32 +256,6 @@ export default function Home() {
                 Download free
               </Link>
             </div>
-          </div>
-        </section>
-
-        {/* Block 7 — Trust Signals */}
-        <section className="border-t border-gray-100">
-          <div className="max-w-5xl mx-auto px-6 py-14">
-            <h2 className="text-xl font-bold text-gray-900">Built for operators, not spectators</h2>
-            <ul className="mt-6 space-y-3">
-              {[
-                'Designed around real small-team constraints',
-                'Focused on workflows, not hype cycles',
-                'Opinionated recommendations, not bloated tool lists',
-                'Meant to be used, not just read',
-              ].map((point) => (
-                <li key={point} className="flex items-start gap-2 text-sm text-gray-600">
-                  <span className="mt-0.5 text-gray-400" aria-hidden="true">—</span>
-                  {point}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/about"
-              className="mt-8 inline-block text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors"
-            >
-              Learn more about the project →
-            </Link>
           </div>
         </section>
 

@@ -104,26 +104,22 @@ export default function About() {
           </section>
         </div>
 
-        {/* Block 5 — Why This Approach Works */}
-        <section className="border-t border-gray-100 bg-gray-50">
+        {/* Section 5 — CTA */}
+        <div className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-16">
-            <div className="max-w-2xl">
-              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">Why this approach works</h2>
-              <ul className="space-y-3">
-                <li className="text-base text-gray-600 leading-relaxed">
-                  <span className="font-medium text-gray-900">Practical, no-fluff content.</span> — focused on what actually moves the needle
-                </li>
-                <li className="text-base text-gray-600 leading-relaxed">
-                  <span className="font-medium text-gray-900">Built for lean teams, not enterprise.</span> — every system is sized for 2–10 person agencies
-                </li>
-                <li className="text-base text-gray-600 leading-relaxed">
-                  <span className="font-medium text-gray-900">Implementation-first — every piece has a next action.</span> — no theory without application
-                </li>
-              </ul>
-              <Link href="/templates/client-onboarding-ai-checklist" className="inline-block mt-6 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
-                Download the starter kit →
-              </Link>
-            </div>
+            <section>
+              <p className="text-base text-gray-600 max-w-2xl leading-relaxed">
+                If any of this resonates, the best next step is to read the guides, download the starter kit, or join the newsletter. Everything here is built to be used — not just read.
+              </p>
+              <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <Link href="/templates/client-onboarding-ai-checklist" className="inline-block text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors">
+                  Download the starter kit →
+                </Link>
+                <Link href="/guides" className="inline-block text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors">
+                  Browse guides →
+                </Link>
+              </div>
+            </section>
           </div>
         </section>
       </main>

@@ -154,27 +154,13 @@ export default function BestAiStackAgenciesUnder150() {
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">How to Stack Them Together</h2>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              Tools are only useful if they connect. Here&apos;s how the full stack works as a system, using three common agency workflows.
+              Tools are only useful if they connect. The pattern is always the same: input (form, transcript, rough notes) → AI processing (Claude prompt) → output routed to your workspace (Notion) via automation (Make). Three workflows that demonstrate this:
             </p>
-            <p className="mt-4 text-base text-gray-600 leading-relaxed">
-              <span className="font-medium">Workflow 1: Client onboarding.</span> New client fills out a Tally intake form. Make triggers on submission: creates a new Notion project from a template, drops the intake data into the project page, and sends a Slack notification. You paste the intake data into Claude with a brief-generation prompt, review the output, and save it to the Notion project. Total manual time: under 10 minutes.
-            </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <span className="font-medium">Workflow 2: Meeting processing.</span> Fireflies records and transcribes your client call. After the call, it generates a summary with action items. Make picks up the summary via webhook, creates tasks in Notion, and drafts a follow-up email using the meeting notes. You review and send. A process that used to take 45 minutes now takes 5.
-            </p>
-            <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              <span className="font-medium">Workflow 3: SOP creation.</span> Team member records a Loom walkthrough of a process. They paste the transcript into Claude with an SOP-generation prompt. Claude outputs a formatted SOP with steps, tools used, and edge cases. The SOP goes into a shared Notion library. What used to be a &ldquo;we&apos;ll document that someday&rdquo; task now takes 10 minutes.
-            </p>
-            <p className="mt-4 text-sm text-gray-500">
-              For a deeper dive on meeting processing tools and workflows, see{' '}
-              <Link
-                href="/tools/best-ai-meeting-assistants-agencies"
-                className="text-blue-600 hover:text-blue-700 underline"
-              >
-                the best AI meeting assistants for agencies
-              </Link>
-              .
-            </p>
+            <ul className="mt-4 space-y-3 text-base text-gray-600 leading-relaxed">
+              <li><span className="font-medium">Client onboarding:</span> Tally form → Make → Claude brief → Notion project. Manual time: 10 min. <Link href="/guides/automate-client-onboarding-small-agency" className="text-blue-600 hover:text-blue-700 underline text-sm">Full walkthrough →</Link></li>
+              <li><span className="font-medium">Meeting processing:</span> Fireflies transcript → Make webhook → tasks in Notion + draft follow-up email. Manual time: 5 min. <Link href="/tools/best-ai-meeting-assistants-agencies" className="text-blue-600 hover:text-blue-700 underline text-sm">Tool comparison →</Link></li>
+              <li><span className="font-medium">SOP creation:</span> Loom recording → transcript → Claude SOP prompt → Notion library. Manual time: 10 min. <Link href="/tools/best-ai-tools-sops-small-agencies" className="text-blue-600 hover:text-blue-700 underline text-sm">SOP tools guide →</Link></li>
+            </ul>
           </section>
 
           {/* Related Resources */}
