@@ -130,6 +130,14 @@ export default function Newsletter() {
           </div>
         </section>
 
+        {/* Who It's For */}
+        <section className="bg-gray-50 border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Who it&apos;s for</h2>
+            <p className="text-base text-gray-700 max-w-2xl">This newsletter is for small agencies, operators, and service teams that want more leverage and less noise.</p>
+          </div>
+        </section>
+
         {/* Sample Issues */}
         <section className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Sample issues</h2>
@@ -146,14 +154,6 @@ export default function Newsletter() {
           </div>
           <div className="mt-8">
             <a href="#signup" className="text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600 transition-colors">Join now</a>
-          </div>
-        </section>
-
-        {/* Who It's For */}
-        <section className="bg-gray-50 border-t border-gray-100">
-          <div className="max-w-5xl mx-auto px-6 py-16">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Who it&apos;s for</h2>
-            <p className="text-base text-gray-700 max-w-2xl">This newsletter is for small agencies, operators, and service teams that want more leverage and less noise.</p>
           </div>
         </section>
 
