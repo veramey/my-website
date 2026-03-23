@@ -39,6 +39,32 @@ export default function AutomateClientOnboarding() {
             </p>
           </header>
 
+          {/* Workflow Overview */}
+          <section className="mt-10">
+            <nav aria-label="Workflow steps">
+              <div className="flex flex-col md:flex-row items-center gap-4">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  Intake form
+                </div>
+                <span className="text-gray-300 text-lg hidden md:block">→</span>
+                <span className="text-gray-300 block md:hidden text-center">↓</span>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  AI brief generation
+                </div>
+                <span className="text-gray-300 text-lg hidden md:block">→</span>
+                <span className="text-gray-300 block md:hidden text-center">↓</span>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  Kickoff prep
+                </div>
+                <span className="text-gray-300 text-lg hidden md:block">→</span>
+                <span className="text-gray-300 block md:hidden text-center">↓</span>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  Follow-up handoff
+                </div>
+              </div>
+            </nav>
+          </section>
+
           {/* Step 1 */}
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Step 1: Set Up Your Intake Form</h2>
