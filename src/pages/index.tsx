@@ -87,12 +87,6 @@ const whoItIsFor = {
   ],
 }
 
-const coreProblems: string[] = [
-  'Messy onboarding',
-  'Inconsistent delivery',
-  'Undocumented processes',
-  'Too much admin work',
-]
 
 const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
 const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
@@ -204,20 +198,6 @@ export default function Home() {
                 </ul>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Core Problem block */}
-        <section className="border-t border-gray-100 bg-gray-50">
-          <div className="max-w-5xl mx-auto px-6 py-14">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">The Problem</h2>
-            <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {coreProblems.map((problem) => (
-                <li key={problem} className="bg-white border border-gray-100 rounded-lg px-5 py-4 text-sm font-medium text-gray-800">
-                  {problem}
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 
