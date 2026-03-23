@@ -37,7 +37,34 @@ export default function AutomateClientOnboarding() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               Most small agencies waste hours every time they onboard a new client — chasing intake forms, manually prepping briefs, and writing the same kickoff emails. This guide walks through a four-step workflow that replaces that manual overhead with a system that runs itself.
             </p>
+            <p className="mt-3 text-sm text-gray-400">7–10 min read · For: 2–10 person agencies</p>
           </header>
+
+          {/* Workflow Overview */}
+          <section className="mt-10">
+            <nav aria-label="Workflow steps">
+              <div className="flex flex-col md:flex-row items-center gap-4">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  Intake form
+                </div>
+                <span className="text-gray-300 text-lg hidden md:block">→</span>
+                <span className="text-gray-300 block md:hidden text-center">↓</span>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  AI brief generation
+                </div>
+                <span className="text-gray-300 text-lg hidden md:block">→</span>
+                <span className="text-gray-300 block md:hidden text-center">↓</span>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  Kickoff prep
+                </div>
+                <span className="text-gray-300 text-lg hidden md:block">→</span>
+                <span className="text-gray-300 block md:hidden text-center">↓</span>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 text-center">
+                  Follow-up handoff
+                </div>
+              </div>
+            </nav>
+          </section>
 
           {/* Step 1 */}
           <section className="border-t border-gray-100 pt-8 mt-10">
