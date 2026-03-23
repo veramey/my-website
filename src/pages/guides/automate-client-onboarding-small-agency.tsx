@@ -174,6 +174,55 @@ export default function AutomateClientOnboarding() {
             </aside>
           </section>
 
+          {/* Common Mistakes */}
+          <section className="border-t border-gray-100 pt-8 mt-10">
+            <h2 className="text-xl font-semibold text-gray-900">Common Mistakes when automating onboarding</h2>
+            <ol className="mt-4 text-base text-gray-600 leading-relaxed space-y-3 list-decimal list-inside">
+              <li>Automating before the process is defined — if your manual onboarding is inconsistent, automation will just make it consistently broken.</li>
+              <li>Using too many tools at once — adding five new tools to solve one problem creates more complexity than it removes.</li>
+              <li>Skipping the human review step — AI-generated briefs and emails need a quick review before they reach the client.</li>
+              <li>Not setting client expectations about AI-assisted workflows — clients who don&apos;t know how your system works may find automated touchpoints impersonal.</li>
+              <li>Failing to iterate the workflow after the first few clients — the first version will have gaps; build in a review after every two or three onboardings.</li>
+            </ol>
+            <Link
+              href="/templates/client-onboarding-ai-checklist"
+              className="inline-block mt-6 text-sm font-medium text-blue-600 hover:text-blue-700 underline"
+            >
+              Get the AI onboarding checklist →
+            </Link>
+          </section>
+
+          {/* Simple Stack */}
+          <section className="border-t border-gray-100 pt-8 mt-10">
+            <h2 className="text-xl font-semibold text-gray-900">Simple stack for this workflow</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+              <aside className="bg-gray-50 border border-gray-100 rounded-lg p-5">
+                <h3 className="text-base font-medium text-gray-900">Minimal (free)</h3>
+                <ul className="mt-2 text-sm text-gray-600 space-y-1 leading-relaxed">
+                  <li><span className="font-medium">Tally</span> — free intake forms with conditional logic</li>
+                  <li><span className="font-medium">Notion (free tier)</span> — client project workspace</li>
+                  <li><span className="font-medium">ChatGPT (free tier)</span> — brief generation and email drafts</li>
+                  <li><span className="font-medium">Google Calendar</span> — kickoff scheduling</li>
+                </ul>
+              </aside>
+              <aside className="bg-gray-50 border border-gray-100 rounded-lg p-5">
+                <h3 className="text-base font-medium text-gray-900">Full stack (under $100/mo)</h3>
+                <ul className="mt-2 text-sm text-gray-600 space-y-1 leading-relaxed">
+                  <li><span className="font-medium">Typeform</span> — polished intake with CRM integrations</li>
+                  <li><span className="font-medium">Notion AI</span> — AI processing inside your workspace</li>
+                  <li><span className="font-medium">Claude Pro or ChatGPT Plus</span> — higher-quality outputs</li>
+                  <li><span className="font-medium">Make</span> — automated triggers between every tool</li>
+                </ul>
+              </aside>
+            </div>
+            <Link
+              href="/tools/best-ai-tools-small-agencies"
+              className="inline-block mt-6 text-sm font-medium text-blue-600 hover:text-blue-700 underline"
+            >
+              See full tool recommendations →
+            </Link>
+          </section>
+
           {/* Closing */}
           <section className="border-t border-gray-100 pt-8 mt-10">
             <h2 className="text-xl font-semibold text-gray-900">Putting It All Together</h2>
