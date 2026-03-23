@@ -37,6 +37,7 @@ export default function AutomateClientOnboarding() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               Most small agencies waste hours every time they onboard a new client — chasing intake forms, manually prepping briefs, and writing the same kickoff emails. This guide walks through a four-step workflow that replaces that manual overhead with a system that runs itself.
             </p>
+            <p className="mt-3 text-sm text-gray-400">7–10 min read · For: 2–10 person agencies</p>
           </header>
 
           {/* Step 1 */}
