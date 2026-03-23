@@ -1,35 +1,23 @@
+'use client'
+
+import React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 import { guides, GuideSubcategory } from '@/lib/guides'
 
-const SUBCATEGORY_ORDER: GuideSubcategory[] = [
-  'Client Onboarding',
-  'Delivery & Client Work',
-  'Internal Operations',
-  'Team Productivity',
+const FILTERS: { label: string; value: GuideSubcategory | null }[] = [
+  { label: 'All', value: null },
+  { label: 'Onboarding', value: 'Client Onboarding' },
+  { label: 'Internal Ops', value: 'Internal Operations' },
+  { label: 'Delivery', value: 'Delivery & Client Work' },
+  { label: 'Automation', value: 'Team Productivity' },
 ]
 
-const SUBCATEGORY_ANCHOR: Partial<Record<GuideSubcategory, string>> = {
-  'Client Onboarding': 'onboarding',
-  'Delivery & Client Work': 'delivery',
-  'Internal Operations': 'internal-ops',
-}
-
-function groupBySubcategory(articles: typeof guides) {
-  const map = new Map<GuideSubcategory, typeof guides>()
-  for (const article of articles) {
-    if (!map.has(article.subcategory)) {
-      map.set(article.subcategory, [])
-    }
-    map.get(article.subcategory)!.push(article)
-  }
-  return map
-}
-
 export default function GuidesIndex() {
-  const grouped = groupBySubcategory(guides)
-  const subcategories = SUBCATEGORY_ORDER.filter((cat) => grouped.has(cat))
+  const [active, setActive] = React.useState<GuideSubcategory | null>(null)
+
+  const filtered = active ? guides.filter((g) => g.subcategory === active) : guides
 
   return (
     <>
@@ -57,49 +45,50 @@ export default function GuidesIndex() {
           How-to articles, workflow systems, and implementation guides for running a leaner agency with AI.
         </p>
 
-        <nav aria-label="Topic navigation" className="mt-6">
-          <div className="inline-flex items-center gap-x-3 flex-wrap">
-            <a href="#onboarding" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Onboarding</a>
-            <a href="#internal-ops" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Internal Ops</a>
-            <a href="#delivery" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Delivery</a>
-            <a href="#automation" className="border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors">Automation</a>
-          </div>
-        </nav>
+        <div className="mt-6 flex items-center gap-2 flex-wrap">
+          {FILTERS.map((f) => (
+            <button
+              key={f.label}
+              onClick={() => setActive(f.value)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                active === f.value
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-400 hover:text-gray-900'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
 
-        {subcategories.length === 0 ? null : (
-          <div className="mt-14 space-y-14">
-            {subcategories.map((subcategory) => (
-              <section key={subcategory} id={SUBCATEGORY_ANCHOR[subcategory]}>
-                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
-                  {subcategory}
-                </h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {grouped.get(subcategory)!.map((article) => (
-                    <Link
-                      key={article.slug}
-                      href={article.href}
-                      className="group block border border-gray-100 rounded-lg p-5 hover:border-gray-300 transition-colors"
-                    >
-                      <h3 className="text-sm font-semibold text-gray-900 group-hover:text-gray-600 transition-colors leading-snug">
-                        {article.title}
-                      </h3>
-                      <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-                        {article.description}
-                      </p>
-                      {(article.readingTime || article.whoItIsFor) && (
-                        <div className="mt-3 flex flex-wrap gap-3">
-                          {article.readingTime && (
-                            <span className="text-xs text-gray-400">{article.readingTime}</span>
-                          )}
-                          {article.whoItIsFor && (
-                            <span className="text-xs text-gray-400">{article.whoItIsFor}</span>
-                          )}
-                        </div>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </section>
+        {filtered.length === 0 ? (
+          <p className="mt-14 text-sm text-gray-400">No guides in this category yet.</p>
+        ) : (
+          <div className="mt-10 grid md:grid-cols-2 gap-6">
+            {filtered.map((article) => (
+              <Link
+                key={article.slug}
+                href={article.href}
+                className="group block border border-gray-100 rounded-lg p-5 hover:border-gray-300 transition-colors"
+              >
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">{article.subcategory}</span>
+                <h3 className="mt-2 text-sm font-semibold text-gray-900 group-hover:text-gray-600 transition-colors leading-snug">
+                  {article.title}
+                </h3>
+                <p className="mt-2 text-sm text-gray-500 leading-relaxed">
+                  {article.description}
+                </p>
+                {(article.readingTime || article.whoItIsFor) && (
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    {article.readingTime && (
+                      <span className="text-xs text-gray-400">{article.readingTime}</span>
+                    )}
+                    {article.whoItIsFor && (
+                      <span className="text-xs text-gray-400">{article.whoItIsFor}</span>
+                    )}
+                  </div>
+                )}
+              </Link>
             ))}
           </div>
         )}
