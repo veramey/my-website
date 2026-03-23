@@ -207,6 +207,37 @@ export default function ClientOnboardingAiChecklist() {
           </div>
         </section>
 
+        {/* Block 8 — FAQ */}
+        <section className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-6 py-16">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Frequently asked</h2>
+            <div className="flex flex-col gap-8 max-w-2xl">
+              {faqs.map((faq) => (
+                <div key={faq.q}>
+                  <p className="text-sm font-semibold text-gray-900">{faq.q}</p>
+                  <p className="mt-2 text-sm text-gray-500 leading-relaxed">{faq.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Block 9 — Final CTA */}
+        <section className="max-w-5xl mx-auto px-6 py-20">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Ready to start</p>
+            <h2 className="text-3xl font-bold text-gray-900 leading-tight tracking-tight">
+              Download the AI Ops Starter Kit
+            </h2>
+            <p className="mt-4 text-base text-gray-600 leading-relaxed">
+              Turn your onboarding from improvised to repeatable.
+            </p>
+            <div className="mt-8">
+              <a href="#download-form" className="px-6 py-3 bg-gray-900 text-white text-base font-medium rounded hover:bg-gray-700 transition-colors">Download free</a>
+            </div>
+          </div>
+        </section>
+
         {/* Section 7 — Download CTA */}
         <section id="download-form" className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-5xl mx-auto px-6 py-20">
