@@ -37,6 +37,7 @@ export default function BestAiStackAgenciesUnder150() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               Most small agencies either spend nothing on AI tools and do everything manually, or sign up for a dozen subscriptions they barely use. Neither works. This guide lays out two concrete stacks — one under $75/month and one under $150/month — with specific tools, actual prices, and how they connect into a real workflow.
             </p>
+            <p className="mt-3 text-sm text-gray-400">5–6 min read · For: agency ops leads</p>
           </header>
 
           {/* Why Budget Matters */}

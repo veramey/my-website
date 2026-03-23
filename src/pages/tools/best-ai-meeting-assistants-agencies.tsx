@@ -37,6 +37,7 @@ export default function BestAIMeetingAssistants() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               Meetings are where agency time disappears. AI meeting assistants can automatically transcribe calls, extract action items, and send follow-up summaries — so your team spends less time on admin and more time on delivery. This roundup covers the best options for small agencies based on output quality, pricing, and how well they fit lean team workflows.
             </p>
+            <p className="mt-3 text-sm text-gray-400">5–7 min read · For: client-facing agency teams</p>
           </header>
 
           {/* What to look for */}

@@ -37,6 +37,7 @@ export default function SevenWorkflowsAutomateSmallAgency() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               Small agencies lose 15&ndash;20 hours a week to work that feels productive but isn&apos;t: formatting reports, writing follow-up emails, copying meeting notes into task lists, chasing intake forms. These seven workflows are the highest-ROI automations for teams of 2&ndash;10 people &mdash; ranked by how much time they actually save.
             </p>
+            <p className="mt-3 text-sm text-gray-400">8–10 min read · For: small agency operators</p>
           </header>
 
           {/* Workflow 1: Client Onboarding */}
