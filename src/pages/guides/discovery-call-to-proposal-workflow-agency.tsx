@@ -1,10 +1,13 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import { guides } from '@/lib/guides'
 
 const CANONICAL_URL = 'https://www.aiopagency.com/guides/discovery-call-to-proposal-workflow-agency'
 
 export default function DiscoveryCallToProposalWorkflow() {
+  const guide = guides.find((g) => g.slug === 'discovery-call-to-proposal-workflow-agency')
+
   return (
     <>
       <Head>
@@ -37,7 +40,12 @@ export default function DiscoveryCallToProposalWorkflow() {
             <p className="mt-4 text-base text-gray-500 leading-relaxed">
               Most agencies spend 2&ndash;4 hours turning a single discovery call into a proposal. You take notes during the call, re-listen to parts you missed, manually pull out scope details, draft the proposal from scratch, format it, review it, and send it a day or two later. By then the prospect has cooled off &mdash; or worse, talked to a faster competitor. This guide walks through a five-step workflow that cuts that time to under 45 minutes using AI tools you can set up today.
             </p>
-            <p className="mt-3 text-sm text-gray-400">6–8 min read · For: agency founders and account managers</p>
+            {(guide?.readingTime || guide?.whoItIsFor) && (
+              <div className="mt-3 flex flex-wrap gap-3 text-sm text-gray-400">
+                {guide.readingTime && <span>{guide.readingTime}</span>}
+                {guide.whoItIsFor && <span>{guide.whoItIsFor}</span>}
+              </div>
+            )}
           </header>
 
           {/* Section 1: The Problem */}
