@@ -216,6 +216,37 @@ export default function AutomateClientOnboarding() {
               . It includes the intake form template, kickoff prompt pack, and handoff email templates.
             </p>
           </section>
+
+          {/* Final CTA */}
+          <section className="border-t border-gray-200 pt-10 mt-12">
+            <h2 className="text-xl font-semibold text-gray-900">What to do next</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+              <Link
+                href="/templates/client-onboarding-ai-checklist"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Download the client onboarding AI checklist"
+              >
+                <p className="text-sm font-medium text-gray-900">Get the checklist</p>
+                <p className="mt-1 text-sm text-gray-500">Free AI onboarding checklist for agencies</p>
+              </Link>
+              <Link
+                href="/tools/best-ai-tools-small-agencies"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Browse best AI tools for small agencies"
+              >
+                <p className="text-sm font-medium text-gray-900">Browse the tools</p>
+                <p className="mt-1 text-sm text-gray-500">Best AI tools for small agencies</p>
+              </Link>
+              <Link
+                href="/newsletter"
+                className="block rounded-lg border border-gray-200 p-5 hover:border-gray-300 transition-colors"
+                aria-label="Join the newsletter for weekly AI ops workflows"
+              >
+                <p className="text-sm font-medium text-gray-900">Get weekly workflows</p>
+                <p className="mt-1 text-sm text-gray-500">Practical AI ops delivered weekly</p>
+              </Link>
+            </div>
+          </section>
         </article>
       </div>
     </>
