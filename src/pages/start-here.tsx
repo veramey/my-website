@@ -2,45 +2,6 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 
-interface RouteCard {
-  title: string
-  pain: string
-  outcome: string
-  ctaLabel: string
-  href: string
-}
-
-const routeCards: RouteCard[] = [
-  {
-    title: "I'm new to AI ops",
-    pain: "Not sure where to start with AI for your agency.",
-    outcome: "Get the essential tools, workflows, and a starter kit in one reading path.",
-    ctaLabel: "Start the reading path",
-    href: "/tools/best-ai-tools-small-agencies",
-  },
-  {
-    title: "I want quick wins",
-    pain: "You have a specific problem to fix — meeting notes, proposals, onboarding.",
-    outcome: "Find a focused workflow you can implement this week.",
-    ctaLabel: "See quick wins",
-    href: "/guides",
-  },
-  {
-    title: "I'm choosing tools",
-    pain: "Too many AI tools, not sure which ones are worth it for a small team.",
-    outcome: "Honest roundups, comparisons, and budget stacks built for agencies.",
-    ctaLabel: "Browse tools",
-    href: "/tools",
-  },
-  {
-    title: "I want ready-made resources",
-    pain: "You want to skip the setup and get straight to using something.",
-    outcome: "Download templates, checklists, and systems ready to use today.",
-    ctaLabel: "See templates",
-    href: "/templates",
-  },
-]
-
 const quickWins = [
   { title: 'Automate meeting notes', href: '/guides' },
   { title: 'Improve proposals with AI', href: '/guides' },
@@ -93,28 +54,6 @@ export default function StartHere() {
               <p>
                 If you run a 2–10 person agency or service business and want implementation over inspiration, you&apos;re in the right place.
               </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Block 2 — Route Cards */}
-        <section className="border-t border-gray-100 bg-gray-50">
-          <div className="max-w-5xl mx-auto px-6 py-16">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">Where do you want to start?</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
-              {routeCards.map((card) => (
-                <div key={card.href + card.title} className="bg-white border border-gray-100 rounded-lg p-5 flex flex-col gap-3">
-                  <h3 className="font-semibold text-gray-900">{card.title}</h3>
-                  <p className="text-sm text-gray-600">{card.pain}</p>
-                  <p className="text-sm text-gray-600">{card.outcome}</p>
-                  <Link
-                    href={card.href}
-                    className="self-start bg-gray-900 text-white px-5 py-2.5 rounded text-sm font-medium hover:bg-gray-700 transition-colors"
-                  >
-                    {card.ctaLabel}
-                  </Link>
-                </div>
-              ))}
             </div>
           </div>
         </section>
